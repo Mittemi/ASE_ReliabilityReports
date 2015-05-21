@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  <groupId>ase.tuwien.ac.at</groupId>
+  <artifactId>ase</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>ASE - WL reliability reports</name>
+  <description>ASE mini project</description>
+
+  
+  <modules>
+    <module>ase.analysis</module>
+    <module>ase.apiGateway</module>
+    <module>ase.evaluation</module>
+    <module>ase.notify</module>
+    <module>ase.reportStorage</module>
+  </modules>
+
+
+  <profiles>
+
+    <profile>
+      <id>all</id>
+      <modules>
+        <module>ase.analysis</module>
+        <module>ase.apiGateway</module>
+        <module>ase.evaluation</module>
+        <module>ase.notify</module>
+        <module>ase.reportStorage</module>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ase.shared</id>
+      <modules>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ase.analysis</id>
+      <modules>
+        <module>ase.analysis</module>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ase.apiGateway</id>
+      <modules>
+        <module>ase.apiGateway</module>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ase.evaluation</id>
+      <modules>
+        <module>ase.evaluation</module>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ase.notify</id>
+      <modules>
+        <module>ase.notify</module>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ase.reportStorage</id>
+      <modules>
+        <module>ase.reportStorage</module>
+        <module>ase.shared</module>
+      </modules>
+    </profile>
+
+  </profiles>
+
+</project>
