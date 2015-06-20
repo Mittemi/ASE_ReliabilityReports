@@ -3,13 +3,20 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ase.tuwien.ac.at</groupId>
 	<artifactId>ase.shared</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>ase.shared</name>
 	<description>Shared classes for ASE</description>
+
+
+	<parent>
+		<artifactId>ase</artifactId>
+		<groupId>ase.tuwien.ac.at</groupId>
+		<version>1.0-SNAPSHOT</version>
+		<!-- lookup parent from repository -->
+	</parent>
 
 
 	<properties>
@@ -20,11 +27,4 @@
 	<dependencies>
 
 	</dependencies>
-	
-	<build>
-		<plugins>
-
-		</plugins>
-	</build>
-
 </project>

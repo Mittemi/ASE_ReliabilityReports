@@ -1,2 +1,9 @@
 src/.idea/
 *.iml
+src/ase.analysis/target/
+src/ase.reportStorage/target/
+src/ase.shared/.gradle/
+src/ase.shared/target/
+src/ase.shared/gradle/
+src/ase.shared/gradlew
+src/ase.shared/gradlew.bat
