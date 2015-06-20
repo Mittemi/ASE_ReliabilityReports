@@ -2,10 +2,12 @@ package ase.shared.commands;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Michael on 20.06.2015.
  */
+@Component
 public class CommandFactory {
 
     @Autowired

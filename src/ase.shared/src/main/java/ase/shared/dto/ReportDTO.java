@@ -1,8 +1,8 @@
 package ase.shared.dto;
 
-import ase.shared.model.Line;
+import ase.shared.model.simulation.Line;
 import ase.shared.model.ReportTimeSpan;
-import ase.shared.model.Station;
+import ase.shared.model.simulation.Station;
 import ase.shared.model.Statistics;
 
 import java.util.LinkedList;

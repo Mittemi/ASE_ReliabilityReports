@@ -1,4 +1,4 @@
-package ase.shared.model;
+package ase.shared.model.simulation;
 
 /**
  * Created by Michael on 20.06.2015.
