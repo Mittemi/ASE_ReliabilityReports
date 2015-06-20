@@ -2,7 +2,6 @@ package ase.shared.commands;
 
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
 import java.util.Collection;

@@ -2,7 +2,6 @@ package ase.analysis.service;
 
 import ase.shared.dto.NotificationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
