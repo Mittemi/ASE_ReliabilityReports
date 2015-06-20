@@ -25,6 +25,7 @@ public class DataSimulation {
     private DateTime currentTime = new DateTime(2015,6,1,8,0,0);
 
 
+    private final int TIME_TO_TRAVEL_PER_STATION = 2;
 
     /**
      * Name -> Station
@@ -239,6 +240,21 @@ public class DataSimulation {
                 realtimeData.setError(false);
                 realtimeData.setStation(station);
                 Train nearestTrain = getNearestTrain(station, direction);
+                realtimeData.setTrain(nearestTrain);
+
+                int countStationsTillStation = getCountStationsTillTargetStation(position.get(nearestTrain), station, direction, this.direction.get(nearestTrain));
+
+                // not in the station
+                if(countStationsTillStation != 0) {
+                    int time = waitingTime.get(nearestTrain) + countStationsTillStation * TIME_TO_TRAVEL_PER_STATION;
+                    realtimeData.setEstimatedArrival(currentTime.plusMinutes(time).toDate());
+                }
+
+                if(getLastTrain(station, direction) != null) {
+                    realtimeData.setPlannedArrival(getLastTrain(station, direction).plusMinutes(TIME_TO_TRAVEL_PER_STATION).toDate());
+                }else  {
+                    realtimeData.setPlannedArrival(realtimeData.getEstimatedArrival());     // for the first trains --> planned = estimated
+                }
 
                 result.add(realtimeData);
             }
@@ -260,10 +276,27 @@ public class DataSimulation {
 
     private Train getNearestTrain(Station station, Station direction) {
 
-        //TODO: this
-        BiMap<Station, Integer> stationsMap = lineToStations.get(stationToLine.get(station));
+        Line line = stationToLine.get(station);
 
-        return null;
+        Train train = null;
+        int distance = Integer.MAX_VALUE;
+
+        ConcurrentHashMap<Integer, Train> trainsMap = trainsPerLine.get(line);
+        for (Train currentTrain : trainsMap.values()) {
+            int newDistance = getCountStationsTillTargetStation(position.get(currentTrain), station, direction, getTrainDirection(currentTrain));
+            if(train == null) {
+                train = currentTrain;
+                distance = newDistance;
+            }else if(newDistance < distance) {
+                train = currentTrain;
+            }
+        }
+
+        return train;
+    }
+
+    private Station getTrainDirection(Train train) {
+        return this.direction.get(train);
     }
 
     /**
@@ -275,53 +308,33 @@ public class DataSimulation {
      * @param directionTrain
      * @return
      */
-    private int getCountStationsTillStation(Station station, Station target, Station directionOperated, Station directionTrain) {
+    private int getCountStationsTillTargetStation(Station station, Station target, Station directionOperated, Station directionTrain) {
 
-        // TODO: this
+        // TODO: check it
 
         int cntStations = getAllStations(stationToLine.get(station)).size();
 
-        // same station
-        if(station == target) {
-            if(directionOperated == directionTrain) {
+        if(directionOperated == directionTrain) {
+
+            if(station == target)
                 return 0;
-            }
-            // TODO: check this
-            return cntStations <= 3 ? cntStations : cntStations + 1;
-        }
 
-        int cmpResult = stationCompare(station, target, directionOperated);
+            int cmpResult = stationCompare(station, target, directionOperated);
 
-        // -->
-        if(cmpResult < 0) {
-            if(directionOperated == directionTrain) {
+            if(cmpResult < 0)
                 return getCountStationsBetween(station, target);
-            }
-            // we need to complete the current direction + the way to the target (changing the direction happens immediately )
-            // start2station + target2end
-            return getCountStationsBetween(directionTrain, target) + getCountStationsBetween(target, getOtherDirection(directionOperated));
+
+            // to the end --> all back --> to the target
+            // station > target
+            return getCountStationsBetween(station, directionOperated) + (cntStations <= 3 ? cntStations : cntStations + 1) + getCountStationsBetween(getOtherDirection(directionOperated), target);
+        }else {
+
+            if(station == target)
+                return cntStations <= 3 ? cntStations : cntStations + 1;
+
+            // to the end --> to the station
+            return getCountStationsBetween(station, directionTrain) + getCountStationsBetween(target, directionOperated);
         }
-        else {  // <--
-
-            if(directionOperated == directionTrain) {
-
-            }
-            return getCountStationsBetween(station, target);
-        }
-
-
-
-        // the target is going to be reached somewhere in the future (in the supplied direction)
-//        if(cmpResult < 0)   {
-//
-//            int countStationsBetween = getCountStationsBetween(station, target);
-//
-//            // we need to complete the current direction before starting the other one
-//            //if(directionTrain != directionOperated)
-//            //return countStationsBetween + ;
-//        }
-
-//        return 0;
     }
 
     /**
