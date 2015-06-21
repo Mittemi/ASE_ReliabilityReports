@@ -25,7 +25,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
  * Created by Michael on 20.06.2015.
  */
 @Controller
-@RequestMapping("/simulation")
+@RequestMapping(value = "/simulation")
 public class DataSourceController {
 
     @Autowired
