@@ -19,6 +19,8 @@ public class RealtimeData {
 
     private Date plannedArrival;
 
+    private Date currentTime;
+
     private Station direction;
 
     private boolean error;
@@ -77,5 +79,13 @@ public class RealtimeData {
 
     public void setTrain(Train train) {
         this.train = train;
+    }
+
+    public Date getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(Date currentTime) {
+        this.currentTime = currentTime;
     }
 }

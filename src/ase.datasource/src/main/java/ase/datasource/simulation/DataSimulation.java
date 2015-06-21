@@ -1,5 +1,6 @@
 package ase.datasource.simulation;
 
+import ase.datasource.model.StoredRealtimeData;
 import ase.shared.model.simulation.Line;
 import ase.shared.model.simulation.RealtimeData;
 import ase.shared.model.simulation.Station;
@@ -18,14 +19,23 @@ import java.util.stream.Collectors;
  */
 public class DataSimulation {
 
+    private final int TIME_TO_TRAVEL_PER_STATION = 2;
+    private final boolean ENABLE_DEBUG = true;
+
     // begin static data
 
     private Random random = new Random(1);      //fixed to keep things predictable!
 
     private DateTime currentTime = new DateTime(2015,6,1,8,0,0);
 
+    public DateTime getCurrentTime() {
+        return currentTime;
+    }
 
-    private final int TIME_TO_TRAVEL_PER_STATION = 2;
+    private void println(String text) {
+        if(ENABLE_DEBUG)
+            System.out.println(currentTime.toString("dd.MM HH:mm") + ": " + text);
+    }
 
     /**
      * Name -> Station
@@ -113,7 +123,7 @@ public class DataSimulation {
 
         // arrived at station, nothing to do
         if(waitTime == 0) {
-            System.out.println(currentTime.toString("dd.MM HH:mm") +  ": Train " + trainNumber + " arrived at " + currentStation.getName());
+            println("Train " + trainNumber + " arrived at " + currentStation.getName());
             setWaitTime(train, -1);
         }else if(waitTime == -1) {
             Station nextStation = getNextStation(currentStation, direction);
@@ -135,10 +145,11 @@ public class DataSimulation {
         if(isFree(nextStation, direction)) {
             this.position.put(train, nextStation);
             this.direction.put(train, direction);
-            System.out.println(currentTime.toString("dd.MM HH:mm") +  ": Train " + train.getNumber() + " left " + currentStation.getName());
-            setWaitTime(train, random.nextInt(2) + 1);
+            println("Train " + train.getNumber() + " left " + currentStation.getName());
+            setWaitTime(train, random.nextInt(TIME_TO_TRAVEL_PER_STATION - 1) + 1);
+            setLastTrain(nextStation,direction,currentTime);
         } else {
-            System.out.println(currentTime.toString("dd.MM HH:mm") +  ": Train " + train.getNumber() + " can't leave station " + currentStation.getName() + "! Station: " + nextStation.getName() + " not free in direction " + direction.getName());
+            println("Train " + train.getNumber() + " can't leave station " + currentStation.getName() + "! Station: " + nextStation.getName() + " not free in direction " + direction.getName());
         }
     }
 
@@ -217,11 +228,11 @@ public class DataSimulation {
         }
     }
 
-    public List<RealtimeData> move(String lineName) {
+    public List<StoredRealtimeData> move(String lineName) {
 
         currentTime = currentTime.plusMinutes(1);
 
-        List<RealtimeData> result = new LinkedList<>();
+        List<StoredRealtimeData> result = new LinkedList<>();
         Line line = lines.get(lineName);
 
         ConcurrentHashMap<Integer, Train> trains = this.trainsPerLine.get(line);
@@ -233,7 +244,7 @@ public class DataSimulation {
 
             for(Station direction : directions) {
 
-                RealtimeData realtimeData = new RealtimeData();
+                StoredRealtimeData realtimeData = new StoredRealtimeData();
 
                 realtimeData.setLine(line);
                 realtimeData.setDirection(direction);
@@ -241,6 +252,7 @@ public class DataSimulation {
                 realtimeData.setStation(station);
                 Train nearestTrain = getNearestTrain(station, direction);
                 realtimeData.setTrain(nearestTrain);
+                realtimeData.setCurrentTime(currentTime.toDate());
 
                 int countStationsTillStation = getCountStationsTillTargetStation(position.get(nearestTrain), station, direction, this.direction.get(nearestTrain));
 
@@ -271,7 +283,7 @@ public class DataSimulation {
         //realtimeData.setDirection();
 
         //return realtimeData;
-        return null;
+        return result;
     }
 
     private Train getNearestTrain(Station station, Station direction) {
@@ -283,7 +295,10 @@ public class DataSimulation {
 
         ConcurrentHashMap<Integer, Train> trainsMap = trainsPerLine.get(line);
         for (Train currentTrain : trainsMap.values()) {
-            int newDistance = getCountStationsTillTargetStation(position.get(currentTrain), station, direction, getTrainDirection(currentTrain));
+            Station currentTrainStation = position.get(currentTrain);
+            Station currentTrainDirection = getTrainDirection(currentTrain);
+            int newDistance = getCountStationsTillTargetStation(currentTrainStation, station, direction, currentTrainDirection);
+//            newDistance = getCountStationsTillTargetStation(currentTrainStation, station, direction, currentTrainDirection);
             if(train == null) {
                 train = currentTrain;
                 distance = newDistance;
@@ -329,11 +344,12 @@ public class DataSimulation {
             return getCountStationsBetween(station, directionOperated) + (cntStations <= 3 ? cntStations : cntStations + 1) + getCountStationsBetween(getOtherDirection(directionOperated), target);
         }else {
 
-            if(station == target)
-                return cntStations <= 3 ? cntStations : cntStations + 1;
+           // if(station == target)
+             //   return getCountStationsBetween(station, directionTrain) + getCountStationsBetween(directionTrain, target);
+          //      return cntStations <= 3 ? cntStations : cntStations + 1;
 
             // to the end --> to the station
-            return getCountStationsBetween(station, directionTrain) + getCountStationsBetween(target, directionOperated);
+            return getCountStationsBetween(station, directionTrain) + getCountStationsBetween(directionTrain, target);
         }
     }
 
@@ -446,8 +462,8 @@ public class DataSimulation {
 
         this.trains.put(number, train);
         this.position.put(train, currentStation);
-        int waitTime = random.nextInt(3);       //up to 3 minutes till next station reached
-        setLastTrain(currentStation, endStation, currentTime.minusMinutes(3 - waitTime));
+        int waitTime = random.nextInt(TIME_TO_TRAVEL_PER_STATION);       //up to TIME_TO_TRAVEL_PER_STATION minutes till next station reached
+        setLastTrain(currentStation, endStation, currentTime.minusMinutes(TIME_TO_TRAVEL_PER_STATION - waitTime));
         setWaitTime(train, waitTime);
         this.direction.put(train, endStation);
 

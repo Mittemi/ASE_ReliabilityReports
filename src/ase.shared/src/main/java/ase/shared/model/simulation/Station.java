@@ -7,7 +7,7 @@ public class Station {
 
     private String name;
 
-    private Integer number;
+    private int number;
 
     public String getName() {
         return name;
@@ -17,11 +17,16 @@ public class Station {
         this.name = name;
     }
 
-    public Integer getNumber() {
+    public int getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(int number) {
         this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return "Station: " + name + "(" + number + ")";
     }
 }
