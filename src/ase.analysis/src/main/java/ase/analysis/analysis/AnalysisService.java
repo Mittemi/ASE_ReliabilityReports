@@ -2,18 +2,15 @@ package ase.analysis.analysis;
 
 import ase.analysis.Constants;
 import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
+import ase.analysis.analysis.prioritizedMessaging.PrioritizedJmsTemplate;
 import ase.analysis.analysis.prioritizedMessaging.PrioritizedMessage;
 import ase.analysis.analysis.prioritizedMessaging.PrioritizedMessageCreator;
 import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.AnalysisResponseDTO;
-import org.apache.activemq.network.jms.DestinationBridge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-
-import javax.print.attribute.standard.Destination;
 
 /**
  * Created by Michael on 21.06.2015.
@@ -22,7 +19,7 @@ import javax.print.attribute.standard.Destination;
 public class AnalysisService {
 
     @Autowired
-    private JmsTemplate jmsTemplate;
+    private PrioritizedJmsTemplate prioritizedJmsTemplate;
 
     public AnalysisResponseDTO queueForAnalysis(AnalysisRequestDTO analysisRequestDTO, MessagePriority messagePriority) {
 
@@ -37,9 +34,7 @@ public class AnalysisService {
         if(analysisResponseDTO.isOk()) {
 
             try {
-                //jmsTemplate.convertAndSend("dd","ss");
-                //TODO: remove destination
-                jmsTemplate.send(new PrioritizedMessageCreator(new PrioritizedMessage<Object>(analysisRequestDTO, messagePriority)));
+                prioritizedJmsTemplate.send(new PrioritizedMessageCreator(new PrioritizedMessage<Object>(analysisRequestDTO, messagePriority)));
             } catch (JmsException e) {
                 e.printStackTrace();
                 analysisResponseDTO.setOk(false);

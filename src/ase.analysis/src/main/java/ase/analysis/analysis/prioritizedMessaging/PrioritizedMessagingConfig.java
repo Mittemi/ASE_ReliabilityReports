@@ -21,23 +21,10 @@ public class PrioritizedMessagingConfig {
     private ConnectionFactory connectionFactory;
 
     @Bean
-    public JmsTemplate jmsTemplate() {
+    public PrioritizedJmsTemplate prioritizedJmsTemplate() {
 
-        JmsTemplate jmsTemplate = new QoSEnabledJmsTemplate(connectionFactory);
+        PrioritizedJmsTemplate jmsTemplate = new PrioritizedJmsTemplate(connectionFactory);
         jmsTemplate.setDefaultDestinationName(Constants.ANALYSIS_QUEUE_NAME);
         return jmsTemplate;
     }
-
-
-    public class QoSEnabledJmsTemplate extends JmsTemplate {
-
-        public QoSEnabledJmsTemplate(ConnectionFactory connectionFactory) {
-            super(connectionFactory);
-        }
-
-        protected void doSend(MessageProducer producer, Message message) throws JMSException {
-            producer.send(message, getDeliveryMode(), message.getJMSPriority(), getTimeToLive());
-        }
-    }
-
 }
