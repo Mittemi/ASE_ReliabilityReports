@@ -25,6 +25,8 @@ public class RealtimeData {
 
     private boolean error;
 
+    private boolean trainInStation;
+
     public Line getLine() {
         return line;
     }
@@ -87,5 +89,13 @@ public class RealtimeData {
 
     public void setCurrentTime(Date currentTime) {
         this.currentTime = currentTime;
+    }
+
+    public boolean isTrainInStation() {
+        return trainInStation;
+    }
+
+    public void setTrainInStation(boolean trainInStation) {
+        this.trainInStation = trainInStation;
     }
 }

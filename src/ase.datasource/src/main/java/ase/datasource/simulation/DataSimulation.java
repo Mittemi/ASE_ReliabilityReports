@@ -2,13 +2,15 @@ package ase.datasource.simulation;
 
 import ase.datasource.model.StoredRealtimeData;
 import ase.shared.model.simulation.Line;
-import ase.shared.model.simulation.RealtimeData;
 import ase.shared.model.simulation.Station;
 import ase.shared.model.simulation.Train;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +21,6 @@ import java.util.stream.Collectors;
  */
 public class DataSimulation {
 
-    private final int TIME_TO_TRAVEL_PER_STATION = 2;
     private final boolean ENABLE_DEBUG = true;
 
     // begin static data
@@ -35,6 +36,28 @@ public class DataSimulation {
     private void println(String text) {
         if(ENABLE_DEBUG)
             System.out.println(currentTime.toString("dd.MM HH:mm") + ": " + text);
+    }
+
+    private final ConcurrentHashMap<Line, Integer> timeToTravel;
+
+    public int getTimeToTravelPerStation(String line) {
+        return getTimeToTravelPerStation(lines.get(line));
+    }
+
+    public int getTimeToTravelPerStation(Line line) {
+        return timeToTravel.get(line);
+    }
+
+    public Station getFirstStation(Line line) {
+        int firstStation = lineToStations.get(line).keySet().stream().map(Station::getNumber).min(Integer::compareTo).get();
+
+        return lineToStations.get(line).inverse().get(firstStation);
+    }
+
+    public Station getLastStation(Line line) {
+        int firstStation = lineToStations.get(line).keySet().stream().map(Station::getNumber).max(Integer::compareTo).get();
+
+        return lineToStations.get(line).inverse().get(firstStation);
     }
 
     /**
@@ -65,6 +88,11 @@ public class DataSimulation {
 
     private final ConcurrentHashMap<Station, ConcurrentHashMap<Station, DateTime>> lastTrain;
 
+    private final ConcurrentHashMap<Station,ConcurrentHashMap<Station, DateTime>> estimatedArrival;
+    private final ConcurrentHashMap<Station,ConcurrentHashMap<Station, DateTime>> plannedArrival;
+    private final ConcurrentHashMap<Station, ConcurrentHashMap<Station, Boolean>> trainInStation;
+    private final ConcurrentHashMap<Train, Integer> additonalWaitTime;
+
     /**
      * Train -> delay
      */
@@ -72,6 +100,9 @@ public class DataSimulation {
 
     /**
      * Train -> amount of time to wait till next move
+     * =0: just arrived at current station
+     * >0: on the way to the station
+     * <0: ready to leave station
      */
     private final ConcurrentHashMap<Train, Integer> waitingTime;
 
@@ -104,8 +135,24 @@ public class DataSimulation {
         direction = new ConcurrentHashMap<>();
         position = new ConcurrentHashMap<>();
         lastTrain = new ConcurrentHashMap<>();
+        estimatedArrival = new ConcurrentHashMap<>();
+        plannedArrival = new ConcurrentHashMap<>();
+        trainInStation = new ConcurrentHashMap<>();
+        additonalWaitTime = new ConcurrentHashMap<>();
+        timeToTravel = new ConcurrentHashMap<>();
 
         initU1();
+        checkConstraints();
+    }
+
+    private void checkConstraints() {
+
+        for (Line line : getLines()) {
+            int stations = getAllStations(line).size() * getDirections(line).size();
+            int trains = trainsPerLine.get(line).size();
+            if(stations % trains != 0)
+                throw new RuntimeException("Configuration exception: (stations * directions) % trains needs to be 0");
+        }
     }
 
     /**
@@ -121,35 +168,85 @@ public class DataSimulation {
      //   int delay = this.delayTrain.get(train);
         int waitTime = this.waitingTime.get(train);
 
+        Line line = stationToLine.get(currentStation);
+
         // arrived at station, nothing to do
         if(waitTime == 0) {
             println("Train " + trainNumber + " arrived at " + currentStation.getName());
+            setTrainInStation(currentStation, direction, true);    //arrived
             setWaitTime(train, -1);
         }else if(waitTime == -1) {
             Station nextStation = getNextStation(currentStation, direction);
 
+            boolean left;
             // check if we need to turn on the current station (change direction, happens immediately )
             if(nextStation == null) {
                 Station newDirection = getOtherDirection(direction);
                 // train stays at the same station but changes direction
-                moveTrainIfPossible(train, currentStation, newDirection, currentStation);
+                left = moveTrainIfPossible(train, currentStation, newDirection, currentStation);
             } else {
-                moveTrainIfPossible(train, currentStation, direction, nextStation);
+                left = moveTrainIfPossible(train, currentStation, direction, nextStation);
             }
+
+            if(left) {
+                // train will left station --> set new planned arrival date
+                int factor = (getAllStations(line).size() * getDirections(line).size()) / trainsPerLine.get(line).size();
+
+                int timeToTravelPerStation = getTimeToTravelPerStation(line);
+                DateTime plannedArrival = getPlannedArrival(currentStation, direction);
+                int timeBetweenTrains = timeToTravelPerStation * factor;
+                DateTime newPlannedArrivalTime = plannedArrival.plusMinutes(timeBetweenTrains);
+
+                while(Minutes.minutesBetween(newPlannedArrivalTime, currentTime).getMinutes() > timeBetweenTrains) {
+                    System.out.println("INFO: Skipping the next train as planned time would drift too far from estimated");
+                    newPlannedArrivalTime = newPlannedArrivalTime.plusMinutes(timeBetweenTrains);
+                }
+                //if(Minutes.minutesBetween(newPlannedArrivalTime, currentTime) > timeToTravelPerStation)
+
+                setPlannedArrival(currentStation, direction, newPlannedArrivalTime);
+            }
+
         }else {
             setWaitTime(train, waitTime - 1);
         }
     }
 
-    private void moveTrainIfPossible(Train train, Station currentStation, Station direction, Station nextStation) {
+    private boolean moveTrainIfPossible(Train train, Station currentStation, Station direction, Station nextStation) {
+        //wait when too early
+        setAdditionalWaitTime(train, 0);
+
+        DateTime plannedArrival = getPlannedArrival(currentStation, direction);
+        Minutes diff = Minutes.minutesBetween(currentTime, plannedArrival);
+        if(currentTime.isBefore(plannedArrival)){
+            int additionalWaitingTimeInStation = diff.getMinutes();
+            println("Train " + train.getNumber() + " arrived too soon, needs to wait additional " + additionalWaitingTimeInStation + " Minutes!");
+            setAdditionalWaitTime(train, additionalWaitingTimeInStation);
+            // not needed, statistics knows anyway !?
+            // setLastTrain(currentStation,direction,currentTime);
+            return false;
+        }
+        //end wait
+
+        int timeToTravelPerStation = getTimeToTravelPerStation(stationToLine.get(currentStation));
+        int minTime = timeToTravelPerStation/2;
+        int travelTime = random.nextInt(timeToTravelPerStation - minTime) + minTime;
+
         if(isFree(nextStation, direction)) {
+
+            setTrainInStation(currentStation, this.direction.get(train), false);    //left
+            setLastTrain(nextStation,direction,currentTime);
+            setWaitTime(train, travelTime);
+
             this.position.put(train, nextStation);
             this.direction.put(train, direction);
+
             println("Train " + train.getNumber() + " left " + currentStation.getName());
-            setWaitTime(train, random.nextInt(TIME_TO_TRAVEL_PER_STATION - 1) + 1);
-            setLastTrain(nextStation,direction,currentTime);
+
+            return true;
+
         } else {
             println("Train " + train.getNumber() + " can't leave station " + currentStation.getName() + "! Station: " + nextStation.getName() + " not free in direction " + direction.getName());
+            return false;
         }
     }
 
@@ -164,14 +261,16 @@ public class DataSimulation {
      */
     private Station getOtherDirection(Station direction) {
 
-        BiMap<Station, Integer> stations = this.lineToStations.get(this.stationToLine.get(direction));
+        Line line = this.stationToLine.get(direction);
+        BiMap<Station, Integer> stations = this.lineToStations.get(line);
         Station station;
 
-        if(stations.get(direction) == 1) {
-            station = stations.inverse().get(stations.size());
+        Station first = getFirstStation(line);
+        if(direction == first) {
+            station = getLastStation(line);
         }
         else {
-            station = stations.inverse().get(1);
+            station = first;
         }
 
         assert station != null;
@@ -195,10 +294,25 @@ public class DataSimulation {
      * @param direction
      * @return
      */
-    private boolean isFree(Station station, Station direction){
-        for (Train train : getTrainsInDirection(direction)) {
-            if(this.position.get(train) == station) return false;
+    private boolean isFree(Station station, Station direction) {
+
+        boolean hasTrain = getTrainInStation(station, direction);
+        if(hasTrain) {
+            return false;
         }
+
+        Train trainThere = null;
+        for (Train train : getTrainsInDirection(direction)) {
+            if (this.position.get(train) == station) {
+                trainThere = train;
+                break;
+            }
+        }
+
+        if (trainThere != null) {
+            return getAdditionalWaitTime(trainThere) == 0;
+        }
+
         return true;
     }
 
@@ -218,10 +332,8 @@ public class DataSimulation {
 
         Integer position = stations.get(currentStation);
 
-        Integer idxDirection = stations.get(direction);
-
         // -->
-        if(idxDirection != 1) {
+        if(direction == getLastStation(line)) {
             return stations.inverse().get(position + 1);
         } else  {   // <--
             return stations.inverse().get(position - 1);
@@ -232,12 +344,23 @@ public class DataSimulation {
 
         currentTime = currentTime.plusMinutes(1);
 
-        List<StoredRealtimeData> result = new LinkedList<>();
         Line line = lines.get(lineName);
-
         ConcurrentHashMap<Integer, Train> trains = this.trainsPerLine.get(line);
 
+        List<StoredRealtimeData> result = getRealtimeData(line);
 
+        for (Train train : trains.values()) {
+            tick(train.getNumber());
+        }
+
+        updateArrivalTimes(line);
+
+        return result;
+    }
+
+
+    private List<StoredRealtimeData> getRealtimeData(Line line) {
+        List<StoredRealtimeData> result = new LinkedList<>();
         List<Station> directions = getDirections(line);
 
         for(Station station : getAllStations(line)) {
@@ -250,43 +373,38 @@ public class DataSimulation {
                 realtimeData.setDirection(direction);
                 realtimeData.setError(false);
                 realtimeData.setStation(station);
-                Train nearestTrain = getNearestTrain(station, direction);
-                realtimeData.setTrain(nearestTrain);
                 realtimeData.setCurrentTime(currentTime.toDate());
 
-                int countStationsTillStation = getCountStationsTillTargetStation(position.get(nearestTrain), station, direction, this.direction.get(nearestTrain));
+                Train nearestTrain = getNearestTrain(station, direction, true);
+                realtimeData.setTrain(nearestTrain);
+
+                realtimeData.setTrainInStation(getTrainInStation(station, direction));
+
+                realtimeData.setPlannedArrival(getPlannedArrival(station, direction).toDate());
 
                 // not in the station
-                if(countStationsTillStation != 0) {
-                    int time = waitingTime.get(nearestTrain) + countStationsTillStation * TIME_TO_TRAVEL_PER_STATION;
-                    realtimeData.setEstimatedArrival(currentTime.plusMinutes(time).toDate());
+                if(!realtimeData.isTrainInStation()) {
+                    realtimeData.setEstimatedArrival(getEstimatedArrival(station, direction).toDate());
                 }
 
+/*
                 if(getLastTrain(station, direction) != null) {
-                    realtimeData.setPlannedArrival(getLastTrain(station, direction).plusMinutes(TIME_TO_TRAVEL_PER_STATION).toDate());
+                    realtimeData.setPlannedArrival(getLastTrain(station, direction).plusMinutes(getTimeToTravelPerStation(line)).toDate());
                 }else  {
                     realtimeData.setPlannedArrival(realtimeData.getEstimatedArrival());     // for the first trains --> planned = estimated
-                }
+                }*/
 
                 result.add(realtimeData);
             }
         }
-
-        for (Train train : trains.values()) {
-            tick(train.getNumber());
-        }
-
-        //Integer numberStart = stations.keySet().stream().min((key, val) -> key).get();
-
-        //Integer numberTurn =
-
-        //realtimeData.setDirection();
-
-        //return realtimeData;
         return result;
     }
 
     private Train getNearestTrain(Station station, Station direction) {
+        return getNearestTrain(station, direction, false);
+    }
+
+    private Train getNearestTrain(Station station, Station direction, boolean skipLeftTrains) {
 
         Line line = stationToLine.get(station);
 
@@ -298,7 +416,11 @@ public class DataSimulation {
             Station currentTrainStation = position.get(currentTrain);
             Station currentTrainDirection = getTrainDirection(currentTrain);
             int newDistance = getCountStationsTillTargetStation(currentTrainStation, station, direction, currentTrainDirection);
-//            newDistance = getCountStationsTillTargetStation(currentTrainStation, station, direction, currentTrainDirection);
+
+            if(skipLeftTrains && newDistance == 0 && getTrainInStation(station, direction)){
+                continue;       // train is in station but left already
+            }
+
             if(train == null) {
                 train = currentTrain;
                 distance = newDistance;
@@ -367,8 +489,10 @@ public class DataSimulation {
         int idxA = stationsMap.get(stationA);
         int idxB = stationsMap.get(stationB);
 
+        Line line = stationToLine.get(direction);
+
         // -->
-        if(stationsMap.get(direction) != 1) {
+        if(direction == getLastStation(line)) {
             return Integer.compare(idxA, idxB);
         }
         else {  // <--
@@ -412,10 +536,9 @@ public class DataSimulation {
     private List<Station> getDirections(Line line) {
 
         List<Station> directions = new LinkedList<>();
-        BiMap<Station, Integer> stationsMap = this.lineToStations.get(line);
 
-        directions.add(stationsMap.inverse().get(1));
-        directions.add(stationsMap.inverse().get(stationsMap.size()));
+        directions.add(getFirstStation(line));
+        directions.add(getLastStation(line));
 
         assert directions.size() == 2;
         return directions;
@@ -423,7 +546,7 @@ public class DataSimulation {
 
 
     private void initU1() {
-        Line u1 = createLine("U1");
+        Line u1 = createLine("U1", 4);
 
         Station reumannplatz = createStation(u1, "Reumannplatz", 1);
         Station keplerplatz = createStation(u1, "Keplerplatz", 2);
@@ -438,32 +561,81 @@ public class DataSimulation {
         Station donauinsel = createStation(u1, "Donauinsel", 11);
         Station leopoldau = createStation(u1, "Leopoldau", 12);
 
+        initHelperData(u1);
+
         // Leopoldau -> Raeumannplatz
-        createTrain(u1, 1, leopoldau, reumannplatz);
-        createTrain(u1, 2, vorgartenstraße, reumannplatz);
-        createTrain(u1, 3, nestroyplatz, reumannplatz);
-        createTrain(u1, 4, stephansplatz, reumannplatz);
-        createTrain(u1, 5, taubstummengasse, reumannplatz);
-        createTrain(u1, 6, keplerplatz, reumannplatz);
+        createTrain(u1, 1, leopoldau, reumannplatz, 0);
+        createTrain(u1, 2, vorgartenstraße, reumannplatz, 0);
+        createTrain(u1, 3, nestroyplatz, reumannplatz, 0);
+        createTrain(u1, 4, stephansplatz, reumannplatz, 0);
+        createTrain(u1, 5, taubstummengasse, reumannplatz, 0);
+        createTrain(u1, 6, keplerplatz, reumannplatz, 0);
 
         // Raeumannplatz -> Leopoldau
-        createTrain(u1, 7, reumannplatz, leopoldau);
-        createTrain(u1, 8, hbf, leopoldau);
-        createTrain(u1, 9, karlsplatz, leopoldau);
-        createTrain(u1, 10, schwedenplatz, leopoldau);
-        createTrain(u1, 11, praterstern, leopoldau);
-        createTrain(u1, 12, donauinsel, leopoldau);
+        createTrain(u1, 7, reumannplatz, leopoldau, 0);
+        createTrain(u1, 8, hbf, leopoldau, 0);
+        createTrain(u1, 9, karlsplatz, leopoldau, 0);
+        createTrain(u1, 10, schwedenplatz, leopoldau, 0);
+        createTrain(u1, 11, praterstern, leopoldau, 0);
+        createTrain(u1, 12, donauinsel, leopoldau, 0);
+
+        updateArrivalTimes(u1);
     }
 
-    private Train createTrain(Line line, int number, Station currentStation, Station endStation) {
+    private void initHelperData(Line line) {
+        for (Station station : getAllStations(line)) {
+            for(Station direction : getDirections(line)) {
+                setTrainInStation(station, direction, false);
+                setPlannedArrival(station, direction, currentTime.plusMinutes(getTimeToTravelPerStation(line)));
+            }
+        }
+    }
+
+    private void updateArrivalTimes(Line line) {
+        for (Station station : getAllStations(line)) {
+            for (Station direction : getDirections(line)) {
+
+                DateTime estimatedArrival = currentTime;
+
+                if(isFree(station, direction)) {
+                    Train nearestTrain = getNearestTrain(station, direction, true);
+                    int countStationsTillTargetStation = getCountStationsTillTargetStation(position.get(nearestTrain), station, direction, this.direction.get(nearestTrain));
+
+                    // =0: just arrived at current station
+                    // >0: on the way to the station
+                    // <0: ready to leave station
+                    Integer waitTime = waitingTime.get(nearestTrain);
+
+                    if(waitTime > 0) {
+                        countStationsTillTargetStation = countStationsTillTargetStation - 1;
+                    }
+
+                    estimatedArrival = estimatedArrival.plusMinutes(countStationsTillTargetStation * getTimeToTravelPerStation(line) + waitTime);
+                }
+
+                setEstimatedArrival(station, direction, estimatedArrival);
+            }
+        }
+    }
+
+    /**
+     * IMPORTANT: the amount of (stations times directions) modulo the amount of trains operating needs to be zero (e.g 20 stations, 10 trains is ok, 20 stations 11 trains not!)
+     * @param line
+     * @param number
+     * @param currentStation
+     * @param endStation
+     * @param waitTime
+     * @return
+     */
+    private Train createTrain(Line line, int number, Station currentStation, Station endStation, int waitTime) {
         Train train = new Train();
 
         train.setNumber(number);
 
         this.trains.put(number, train);
         this.position.put(train, currentStation);
-        int waitTime = random.nextInt(TIME_TO_TRAVEL_PER_STATION);       //up to TIME_TO_TRAVEL_PER_STATION minutes till next station reached
-        setLastTrain(currentStation, endStation, currentTime.minusMinutes(TIME_TO_TRAVEL_PER_STATION - waitTime));
+        //int waitTime = random.nextInt(getTimeToTravelPerStation(line));       //up to TIME_TO_TRAVEL_PER_STATION minutes till next station reached
+        //setLastTrain(currentStation, endStation, currentTime.minusMinutes(getTimeToTravelPerStation(line) - waitTime));
         setWaitTime(train, waitTime);
         this.direction.put(train, endStation);
 
@@ -474,6 +646,9 @@ public class DataSimulation {
         }
         trainsOnThisLine.put(number, train);
 
+        setPlannedArrival(currentStation, endStation, currentTime);
+        setAdditionalWaitTime(train, 0);
+        setTrainInStation(currentStation, endStation, true);
         return train;
     }
 
@@ -496,6 +671,57 @@ public class DataSimulation {
     private DateTime getLastTrain(Station station, Station direction) {
         return lastTrain.get(station).get(direction);
     }
+
+    private void setEstimatedArrival(Station station, Station direction, DateTime time) {
+        ConcurrentHashMap<Station, DateTime> stationMap = this.estimatedArrival.get(station);
+
+        if(stationMap == null) {
+            stationMap = new ConcurrentHashMap<>();
+            this.estimatedArrival.put(station, stationMap);
+        }
+        stationMap.put(direction, time);
+    }
+
+    private DateTime getEstimatedArrival(Station station, Station direction) {
+        return estimatedArrival.get(station).get(direction);
+    }
+
+    private void setTrainInStation(Station station, Station direction, Boolean inStation) {
+        ConcurrentHashMap<Station, Boolean> stationMap = this.trainInStation.get(station);
+
+        if(stationMap == null) {
+            stationMap = new ConcurrentHashMap<>();
+            this.trainInStation.put(station, stationMap);
+        }
+        stationMap.put(direction, inStation);
+    }
+
+    private Boolean getTrainInStation(Station station, Station direction) {
+        return trainInStation.get(station).get(direction);
+    }
+
+    private void setAdditionalWaitTime(Train train, int waitTime) {
+        this.additonalWaitTime.put(train, waitTime);
+    }
+
+    private int getAdditionalWaitTime(Train train) {
+        return this.additonalWaitTime.get(train);
+    }
+
+    private void setPlannedArrival(Station station, Station direction, DateTime time) {
+        ConcurrentHashMap<Station, DateTime> stationMap = this.plannedArrival.get(station);
+
+        if(stationMap == null) {
+            stationMap = new ConcurrentHashMap<>();
+            this.plannedArrival.put(station, stationMap);
+        }
+        stationMap.put(direction, time);
+    }
+
+    private DateTime getPlannedArrival(Station station, Station direction) {
+        return plannedArrival.get(station).get(direction);
+    }
+
 
     private Station getCurrentStation(Train train) {
         return this.position.get(train);
@@ -534,7 +760,7 @@ public class DataSimulation {
         return station;
     }
 
-    private Line createLine(String name) {
+    private Line createLine(String name, int timeToTravel) {
         Line line = new Line();
         line.setName(name);
         lines.put(name, line);
@@ -542,7 +768,24 @@ public class DataSimulation {
         // set default values for dynamic data
         lineError.put(line, false);
         this.lineToStations.put(line, Maps.synchronizedBiMap(HashBiMap.create()));
+        this.timeToTravel.put(line, timeToTravel);
 
         return line;
+    }
+
+    public Collection<Line> getLines() {
+        return this.lines.values();
+    }
+
+    public List<Station> getDirections(String lineName) {
+        Line line = lines.get(lineName);
+        if(line == null)    return null;
+        return getDirections(line);
+    }
+
+    public List<Station> getStations(String lineName) {
+        Line line = lines.get(lineName);
+        if(line == null)    return null;
+        return Lists.newLinkedList(getAllStations(line));
     }
 }
