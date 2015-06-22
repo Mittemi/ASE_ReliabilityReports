@@ -77,7 +77,11 @@ public class CommandFactory {
         return autowire(new GetDirectionsCommand(DATASOURCE_URL, line));
     }
 
-    public GetRealtimeDataCommand getRealtimeDataCommand(String lineName, String direction, int stationNumber, Date from, Date to) {
-        return autowire(new GetRealtimeDataCommand(DATASOURCE_URL, lineName, direction, stationNumber, from, to));
+    public GetRealtimeDataByStationAndTWCommand getRealtimeDataByStationAndTWCommand(String lineName, String direction, int stationNumber, Date from, Date to) {
+        return autowire(new GetRealtimeDataByStationAndTWCommand(DATASOURCE_URL, lineName, direction, stationNumber, from, to));
+    }
+
+    public GetRealtimeDataByTrainAndTWCommand getRealtimeDataByTrainAndTWCommand(String lineName, String direction, int trainNumber, Date from, Date to) {
+        return autowire(new GetRealtimeDataByTrainAndTWCommand(DATASOURCE_URL, lineName, direction, trainNumber, from, to));
     }
 }

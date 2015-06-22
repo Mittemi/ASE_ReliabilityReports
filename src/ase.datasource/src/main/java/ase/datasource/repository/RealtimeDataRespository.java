@@ -34,8 +34,14 @@ public interface RealtimeDataRespository extends MongoRepository<StoredRealtimeD
     @Query("{'line.name' : ?0, 'direction.name' : ?1, 'station.number' : ?2, 'currentTime' : { '$gte' : ?3, '$lte' : ?4 }}")
     List<StoredRealtimeData> findByStationAndTW(@Param("lineName") String lineName,
                                                 @Param("direction") String direction,
-                                                @Param("sNumber") int sNumber,
+                                                @Param("stationNumber") int stationNumber,
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @Param("tFrom") Date tFrom,
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @Param("tTo") Date tTo);
 
+    @Query("{'line.name' : ?0, 'direction.name' : ?1, 'train.number' : ?2, 'currentTime' : { '$gte' : ?3, '$lte' : ?4 }}")
+    List<StoredRealtimeData> findByTrainAndTW(@Param("lineName") String lineName,
+                                                       @Param("direction") String direction,
+                                                       @Param("trainNumber") int trainNumber,
+                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @Param("tFrom") Date tFrom,
+                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @Param("tTo") Date tTo);
 }

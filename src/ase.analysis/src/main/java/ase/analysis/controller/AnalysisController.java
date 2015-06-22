@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 /**
  * Created by Michael on 21.06.2015.
  */
@@ -31,6 +33,8 @@ public class AnalysisController {
         AnalysisResponseDTO analysisResponseDTO = new AnalysisResponseDTO();
 
         analysisResponseDTO.setOk(true);
+
+        analysisRequestDTO.setRequestedAt(new Date());
 
         if ("Karlsplatz".equals(analysisRequestDTO.getStationFrom())) {
             analysisService.queueForAnalysis(analysisRequestDTO, MessagePriority.High);

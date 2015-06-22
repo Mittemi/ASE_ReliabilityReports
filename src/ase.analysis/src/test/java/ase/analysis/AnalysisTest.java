@@ -26,7 +26,7 @@ public class AnalysisTest {
 
         AnalysisRequestDTO analysisRequestDTO = new AnalysisRequestDTO();
         analysisRequestDTO.setFrom(new DateTime(2015, 6, 1, 8, 0).toDate());
-        analysisRequestDTO.setTo(new DateTime(2015, 6, 1, 20, 0).toDate());
+        analysisRequestDTO.setTo(new DateTime(2015, 6, 1, 10, 50).toDate());
         analysisRequestDTO.setLine("U1");
         analysisRequestDTO.setStationFrom("Karlsplatz");
         analysisRequestDTO.setStationTo("Donauinsel");

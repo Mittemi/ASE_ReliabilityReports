@@ -171,11 +171,11 @@ public class DataSimulation {
         Line line = stationToLine.get(currentStation);
 
         // arrived at station, nothing to do
-        if(waitTime == 0) {
+        if(waitTime == 1) {
             println("Train " + trainNumber + " arrived at " + currentStation.getName());
             setTrainInStation(currentStation, direction, true);    //arrived
-            setWaitTime(train, -1);
-        }else if(waitTime == -1) {
+            setWaitTime(train, 0);
+        }else if(waitTime == 0) {
             Station nextStation = getNextStation(currentStation, direction);
 
             boolean left;
@@ -184,6 +184,8 @@ public class DataSimulation {
                 Station newDirection = getOtherDirection(direction);
                 // train stays at the same station but changes direction
                 left = moveTrainIfPossible(train, currentStation, newDirection, currentStation);
+                if(left)
+                    train.setTripNumber(train.getTripNumber() + 1);
             } else {
                 left = moveTrainIfPossible(train, currentStation, direction, nextStation);
             }

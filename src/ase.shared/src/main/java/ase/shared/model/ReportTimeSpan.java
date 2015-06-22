@@ -7,29 +7,17 @@ import java.util.Date;
  */
 public class ReportTimeSpan {
 
-    private int fromHour;
+    public ReportTimeSpan() {
+    }
 
-    private int toHour;
+    public ReportTimeSpan(Date fromDate, Date toDate) {
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+    }
 
     private Date fromDate;
 
     private Date toDate;
-
-    public int getFromHour() {
-        return fromHour;
-    }
-
-    public void setFromHour(int fromHour) {
-        this.fromHour = fromHour;
-    }
-
-    public int getToHour() {
-        return toHour;
-    }
-
-    public void setToHour(int toHour) {
-        this.toHour = toHour;
-    }
 
     public Date getFromDate() {
         return fromDate;

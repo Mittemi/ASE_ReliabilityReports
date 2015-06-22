@@ -2,6 +2,7 @@ package ase.shared.dto;
 
 import ase.shared.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -25,6 +26,17 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
     @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
     @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
     private Date to;
+
+    @JsonIgnore
+    private Date requestedAt;
+
+    public Date getRequestedAt() {
+        return requestedAt;
+    }
+
+    public void setRequestedAt(Date requestedAt) {
+        this.requestedAt = requestedAt;
+    }
 
     public AnalysisRequestDTO() {
     }

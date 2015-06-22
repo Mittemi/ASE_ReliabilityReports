@@ -5,6 +5,13 @@ package ase.shared.model.simulation;
  */
 public class Line {
 
+    public Line() {
+    }
+
+    public Line(String name) {
+        this.name = name;
+    }
+
     private String name;
 
     public String getName() {

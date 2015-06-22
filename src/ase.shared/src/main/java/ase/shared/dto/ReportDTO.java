@@ -5,6 +5,7 @@ import ase.shared.model.ReportTimeSpan;
 import ase.shared.model.simulation.Station;
 import ase.shared.model.Statistics;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
