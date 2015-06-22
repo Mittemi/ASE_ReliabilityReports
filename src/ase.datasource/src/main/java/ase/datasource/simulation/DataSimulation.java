@@ -548,18 +548,18 @@ public class DataSimulation {
     private void initU1() {
         Line u1 = createLine("U1", 4);
 
-        Station reumannplatz = createStation(u1, "Reumannplatz", 1);
-        Station keplerplatz = createStation(u1, "Keplerplatz", 2);
-        Station hbf = createStation(u1, "Hauptbahnhof", 3);
-        Station taubstummengasse = createStation(u1, "Taubstummengasse", 4);
-        Station karlsplatz = createStation(u1, "Karlsplatz", 5);
-        Station stephansplatz = createStation(u1, "Stephansplatz", 6);
-        Station schwedenplatz = createStation(u1, "Schwedenplatz", 7);
-        Station nestroyplatz = createStation(u1, "Nestroyplatz", 8);
-        Station praterstern = createStation(u1, "Praterstern", 9);
-        Station vorgartenstraße = createStation(u1, "Vorgartenstraße", 10);
-        Station donauinsel = createStation(u1, "Donauinsel", 11);
-        Station leopoldau = createStation(u1, "Leopoldau", 12);
+        Station reumannplatz = createStation(u1, "Reumannplatz", 1, 1);
+        Station keplerplatz = createStation(u1, "Keplerplatz", 2, 2);
+        Station hbf = createStation(u1, "Hauptbahnhof", 3, 3);
+        Station taubstummengasse = createStation(u1, "Taubstummengasse", 4, 4);
+        Station karlsplatz = createStation(u1, "Karlsplatz", 5, 5);
+        Station stephansplatz = createStation(u1, "Stephansplatz", 6, 6);
+        Station schwedenplatz = createStation(u1, "Schwedenplatz", 7, 7);
+        Station nestroyplatz = createStation(u1, "Nestroyplatz", 8, 8);
+        Station praterstern = createStation(u1, "Praterstern", 9, 9);
+        Station vorgartenstraße = createStation(u1, "Vorgartenstraße", 10, 10);
+        Station donauinsel = createStation(u1, "Donauinsel", 11, 11);
+        Station leopoldau = createStation(u1, "Leopoldau", 12, 12);
 
         initHelperData(u1);
 
@@ -732,6 +732,7 @@ public class DataSimulation {
     // CREATE DEMO DATA
     //
 
+
     /**
      *
      * @param line
@@ -739,12 +740,13 @@ public class DataSimulation {
      * @param number
      * @return
      */
-    private Station createStation(Line line, String name, int number) {
+    private Station createStation(Line line, String name, int number, int position) {
 
         // create station
         Station station = new Station();
         station.setName(name);
         station.setNumber(number);
+        station.setPosition(position);
         stations.put(name, station);
 
         // add station to line

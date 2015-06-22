@@ -6,7 +6,10 @@ import ase.shared.model.simulation.RealtimeData;
 import ase.shared.model.simulation.Station;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +17,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
@@ -24,8 +29,8 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 /**
  * Created by Michael on 20.06.2015.
  */
-@Controller
-@RequestMapping(value = "/simulation")
+@RestController
+@RequestMapping(value = "/static")
 public class DataSourceController {
 
     @Autowired
@@ -53,21 +58,33 @@ public class DataSourceController {
 //    }
 
     @RequestMapping(value = "/lines/")
-    public Resource<Collection<Line>> getLines() {
+    public Collection<Line> getLines() {
         Collection<Line> lines = dataSimulation.getLines();
-        return new Resource<>(lines);
+        return lines;
     }
 
     @RequestMapping(value = "/directions/{line}/")
-    public Resource<List<Station>> getDirections(@PathVariable String line) {
+    public List<Station> getDirections(@PathVariable String line) {
         List<Station> directions = dataSimulation.getDirections(line);
-        return new Resource<>(directions);
+        return directions;
     }
 
     @RequestMapping(value = "/stations/{line}/")
-    public Resource<List<Station>> getAllStations(@PathVariable String line) {
+    public List<Station> getAllStations(@PathVariable String line) {
         List<Station> stations = dataSimulation.getStations(line);
-        return new Resource<>(stations);
+        return stations;
+    }
+
+    @RequestMapping(value="/stations/{line}/between/{a}/{b}/")
+    public List<Station> getStationsBetween(@PathVariable String line, @PathVariable String a, @PathVariable String b) {
+        List<Station> allStations = getAllStations(line);
+
+        Station stationA = allStations.stream().filter(x->x.getName().equals(a)).findFirst().get();
+        Station stationB = allStations.stream().filter(x->x.getName().equals(b)).findFirst().get();
+
+        int min = Math.min(stationA.getPosition(), stationB.getPosition());
+        int max = Math.max(stationA.getPosition(), stationB.getPosition());
+        return allStations.stream().filter(x->x.getPosition() >= min && x.getPosition() <= max).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/time", produces = "application/json")

@@ -1,8 +1,20 @@
 package ase.shared.commands;
 
+import ase.shared.commands.datasource.*;
+import ase.shared.commands.reportstorage.GetReportByIdCommand;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.hateoas.hal.Jackson2HalModule;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Created by Michael on 20.06.2015.
@@ -13,11 +25,59 @@ public class CommandFactory {
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
 
-    private final String REPORT_STORAGE_URL = "http://localhost:9000";
+    @Bean
+    private RestTemplate restTemplate() {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new Jackson2HalModule());
+
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/hal+json"));
+        converter.setObjectMapper(mapper);
+        return new RestTemplate(Arrays.asList(converter));
+        //return new RestTemplate();
+    }
+
+    //TODO: remove . from url (fiddler)
+    private final String REPORT_STORAGE_URL = "http://localhost.:9000";
+    private final String DATASOURCE_URL = "http://localhost.:9999";
+
+    private <T> T autowire(T command) {
+        autowireCapableBeanFactory.autowireBean(command);
+        return command;
+    }
+
+    ///////////////
+    //  REPORTS  //
+    ///////////////
 
     public GetReportByIdCommand getReportByIdCommand(String reportId) {
-        GetReportByIdCommand getReportByIdCommand = new GetReportByIdCommand(REPORT_STORAGE_URL, reportId);
-        autowireCapableBeanFactory.autowireBean(getReportByIdCommand);
-        return getReportByIdCommand;
+        return autowire(new GetReportByIdCommand(REPORT_STORAGE_URL, reportId));
+    }
+
+    //////////////////
+    //  DATASOURCE  //
+    //////////////////
+
+    public GetLinesCommand getLinesCommand() {
+        return autowire(new GetLinesCommand(DATASOURCE_URL));
+    }
+
+    public GetStationsCommand getStationsCommand(String line) {
+        return autowire(new GetStationsCommand(DATASOURCE_URL, line));
+    }
+
+    public GetStationsBetweenCommand getStationsBetweenCommand(String line, String stationA, String stationB) {
+        return autowire(new GetStationsBetweenCommand(DATASOURCE_URL, line, stationA, stationB));
+    }
+
+
+    public GetDirectionsCommand getDirectionsCommand(String line) {
+        return autowire(new GetDirectionsCommand(DATASOURCE_URL, line));
+    }
+
+    public GetRealtimeDataCommand getRealtimeDataCommand(String lineName, String direction, int stationNumber, Date from, Date to) {
+        return autowire(new GetRealtimeDataCommand(DATASOURCE_URL, lineName, direction, stationNumber, from, to));
     }
 }

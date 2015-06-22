@@ -8,12 +8,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.jms.ConnectionFactory;
 
 @SpringBootApplication
+@EnableHypermediaSupport(type= EnableHypermediaSupport.HypermediaType.HAL)
 @ComponentScan(basePackages = { "ase.analysis" }, basePackageClasses = {CommandFactory.class})
 @EnableJms
 public class AnalysisApplication {

@@ -9,6 +9,8 @@ public class Station {
 
     private int number;
 
+    private int position;
+
     public String getName() {
         return name;
     }
@@ -28,5 +30,13 @@ public class Station {
     @Override
     public String toString() {
         return "Station: " + name + "(" + number + ")";
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

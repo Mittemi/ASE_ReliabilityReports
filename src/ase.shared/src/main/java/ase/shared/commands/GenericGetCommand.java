@@ -1,54 +1,42 @@
 package ase.shared.commands;
 
-import org.springframework.hateoas.Resources;
-import org.springframework.hateoas.client.Traverson;
+import ase.shared.Constants;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
+import javax.annotation.Resources;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.MediaTypes.HAL_JSON;
-import static org.springframework.http.MediaType.*;
 
 /**
- * Created by Michael on 20.06.2015.
+ * Created by Michael on 22.06.2015.
  */
-public abstract class GenericGetCommand<TResult extends Resources<TModel>, TModel> implements IRestCommand<TModel> {
+public abstract class GenericGetCommand<TRequest, TModel> {
 
-    private Traverson traverson;
-    private Traverson.TraversalBuilder traversalBuilder;
-    private Class<TResult> clazzResult;
+    @Autowired
+    private RestTemplate restTemplate;
 
-    public GenericGetCommand(Class<TResult> clazzResult, String uri) {
+    private ParameterizedTypeReference<TModel> typeReference;
 
-        this.clazzResult = clazzResult;
-        traverson = new Traverson(URI.create(uri), HAL_JSON, APPLICATION_JSON);
-        traversalBuilder = initBuilder(traverson);
+    protected GenericGetCommand(ParameterizedTypeReference<TModel> typeReference) {
+
+        this.typeReference = typeReference;
     }
 
-    protected abstract Traverson.TraversalBuilder initBuilder(Traverson traverson);
+    protected abstract RequestEntity<TRequest> getRequest();
 
-    @Override
-    public Collection<TModel> execute() {
-        return traversalBuilder.toObject(clazzResult).getContent();
+    public ResponseEntity<TModel> execute() {
+        return restTemplate.exchange(getRequest(), typeReference);
     }
 
-    public TModel getSingleResult() {
-        Collection<TModel> execute = execute();
-        if(execute == null || execute.size() == 0)
-            return null;
-
-        if(execute.size() > 1) {
-
-            System.out.println("Too many results, only 1 expected!");
-            throw new IllegalArgumentException("Too many results, only 1 expected!");
-        }
-
-        return execute.iterator().next();
-    }
-
-    public List<TModel> toList() {
-        return execute().stream().collect(Collectors.toList());
+    public TModel getResult() {
+        ResponseEntity<TModel> body = execute();
+        return body.getBody();
     }
 }
