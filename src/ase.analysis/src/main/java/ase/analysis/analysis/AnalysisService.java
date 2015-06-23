@@ -136,27 +136,49 @@ public class AnalysisService {
      * @return
      */
     private TripsAnalysis analyzeRT(Station entryStation, Station exitStation, String line, String direction, Date from, Date to) {
+
+        //call webservice for RT data
         List<RealtimeData> entryStationRT = commandFactory.getRealtimeDataByStationAndTWCommand(line, direction, entryStation.getNumber(), from, to).toList();
         List<RealtimeData> exitStationRT = commandFactory.getRealtimeDataByStationAndTWCommand(line, direction, exitStation.getNumber(), from, to).toList();
 
-        //all trips started at the entry station in the time frame
-        List<Integer> entryStationTripNumbers = entryStationRT.stream().map(x -> x.getTrain().getTripNumber()).distinct().collect(Collectors.toList());
+        // keep only rt for trains which start in entry and reach arrival station within time frame
+        List<Integer> entryTrainNumbers = entryStationRT.stream().map(x->x.getTrain().getNumber()).distinct().collect(Collectors.toList());
+        exitStationRT = exitStationRT.stream().filter(x->entryTrainNumbers.contains(x.getTrain().getNumber())).collect(Collectors.toList());
+        List<Integer> exitTrainNumbers = exitStationRT.stream().map(x->x.getTrain().getNumber()).distinct().collect(Collectors.toList());
+        entryStationRT = entryStationRT.stream().filter(x->exitTrainNumbers.contains(x.getTrain().getNumber())).collect(Collectors.toList());
 
-        // remove trips form the exit station which have not started at the entry station in the supplied time frame
-        List<RealtimeData> arrivingTripsRT = exitStationRT.stream().filter(x -> entryStationTripNumbers.contains(x.getTrain().getTripNumber())).collect(Collectors.toList());
+        // group by train number (trip numbers are not unique!)
+        Map<Integer, List<RealtimeData>> entryTrainsByTrainNumber = entryStationRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getNumber()));
+        Map<Integer, List<RealtimeData>> exitTrainsByTrainNumber = exitStationRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getNumber()));
 
-        //trips ending at the exit station in the time frame, after first filtering
-        List<Integer> filteredExitStationTripNumbers = arrivingTripsRT.stream().map(x -> x.getTrain().getTripNumber()).distinct().collect(Collectors.toList());
 
-        // remove trips form the entry station which have not ended at the exit station in the supplied time frame
-        List<RealtimeData> startingTripsRT = entryStationRT.stream().filter(x -> filteredExitStationTripNumbers.contains(x.getTrain().getTripNumber())).collect(Collectors.toList());
+        TripsAnalysis tripsAnalysis = new TripsAnalysis();
 
-        //no we have two lists of filtered trip data containing only the trips, both starting and arriving within the supplied time frame
+        for(Integer trainNumber : entryTrainsByTrainNumber.keySet()) {
 
-        Map<Integer, List<RealtimeData>> entryArrivingTripRT = startingTripsRT.stream()/*.filter(x -> arrivingTripsRT.contains(x.getTrain().getTripNumber()))*/.collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
-        Map<Integer, List<RealtimeData>> exitArrivingTripRT = arrivingTripsRT.stream()/*.filter(x -> startingTripsRT.contains(x.getTrain().getTripNumber()))*/.collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
+            // limited RT to the current train, contains still all the trips from this train
+            List<RealtimeData> currentTrainEntryStationRT = entryTrainsByTrainNumber.get(trainNumber);
+            List<RealtimeData> currentTrainExitStationRT = exitTrainsByTrainNumber.get(trainNumber);
 
-        return joinRT(entryArrivingTripRT, exitArrivingTripRT);
+            //all trips started at the entry station in the time frame
+            List<Integer> entryStationTripNumbers = currentTrainEntryStationRT.stream().map(x -> x.getTrain().getTripNumber()).distinct().collect(Collectors.toList());
+
+            // remove trips form the exit station which have not started at the entry station in the supplied time frame
+            List<RealtimeData> arrivingTripsRT = currentTrainExitStationRT.stream().filter(x -> entryStationTripNumbers.contains(x.getTrain().getTripNumber())).collect(Collectors.toList());
+
+            //trips ending at the exit station in the time frame, after first filtering
+            List<Integer> filteredExitStationTripNumbers = arrivingTripsRT.stream().map(x -> x.getTrain().getTripNumber()).distinct().collect(Collectors.toList());
+
+            // remove trips form the entry station which have not ended at the exit station in the supplied time frame
+            List<RealtimeData> startingTripsRT = currentTrainEntryStationRT.stream().filter(x -> filteredExitStationTripNumbers.contains(x.getTrain().getTripNumber())).collect(Collectors.toList());
+
+            //now we have two lists of filtered trip data containing only the trips, both starting and arriving within the supplied time frame
+            Map<Integer, List<RealtimeData>> entryArrivingTripRT = startingTripsRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
+            Map<Integer, List<RealtimeData>> exitArrivingTripRT = arrivingTripsRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
+
+            joinRT(entryArrivingTripRT, exitArrivingTripRT).forEach(tripsAnalysis::addTrip);
+        }
+        return tripsAnalysis;
     }
 
     /**
@@ -165,14 +187,13 @@ public class AnalysisService {
      * @param entryArrivingTripRT
      * @param exitArrivingTripRT
      */
-    private TripsAnalysis joinRT(Map<Integer, List<RealtimeData>> entryArrivingTripRT, Map<Integer, List<RealtimeData>> exitArrivingTripRT) {
-
-        TripsAnalysis tripsAnalysis = new TripsAnalysis();
+    private List<TripAnalysis> joinRT(Map<Integer, List<RealtimeData>> entryArrivingTripRT, Map<Integer, List<RealtimeData>> exitArrivingTripRT) {
+        List<TripAnalysis> result = new LinkedList<>();
 
         for (Integer tripNumber : entryArrivingTripRT.keySet()) {
 
             TripAnalysis tripAnalysisResult = new TripAnalysis(tripNumber);
-            tripsAnalysis.addTrip(tripAnalysisResult);
+            result.add(tripAnalysisResult);
 
             List<RealtimeData> entryRT = entryArrivingTripRT.get(tripNumber);
             List<RealtimeData> exitRT = exitArrivingTripRT.get(tripNumber);
@@ -185,7 +206,7 @@ public class AnalysisService {
             tripAnalysisResult.setExitRT(exitRT);
         }
 
-        return tripsAnalysis;
+        return result;
     }
 
 //    private void followTrains(List<Map<Integer, List<RealtimeData>>> differentTrainsEntry, String line, String direction, Date from, Date to, List<Station> stations, Station entryStation, Station exitStation) {
