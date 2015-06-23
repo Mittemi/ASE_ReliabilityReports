@@ -5,13 +5,11 @@ import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
 import ase.shared.commands.CommandFactory;
 import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.AnalysisResponseDTO;
+import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -23,30 +21,22 @@ import java.util.Date;
 public class AnalysisController {
 
     @Autowired
-    private CommandFactory commandFactory;
-
-    @Autowired
     private AnalysisService analysisService;
 
-    @RequestMapping(value = "/request", method = RequestMethod.POST, produces = "application/json")
-    public AnalysisResponseDTO requestAnalysis(@RequestBody AnalysisRequestDTO analysisRequestDTO) {
+    @RequestMapping(value = "/request/{priority}/", method = RequestMethod.POST, produces = "application/json")
+    public AnalysisResponseDTO requestAnalysis(@RequestBody AnalysisRequestDTO analysisRequestDTO, @PathVariable("priority") String priority) {
 
-        AnalysisResponseDTO analysisResponseDTO = new AnalysisResponseDTO();
+        MessagePriority messagePriority = MessagePriority.valueOf(priority);
 
-        analysisResponseDTO.setOk(true);
-
-        ReportMetadata reportMetadata = new ReportMetadata();
+        ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
         reportMetadata.setRequestedAt(new Date());
+        reportMetadata.setPriority(messagePriority.getValue());
+        reportMetadata.setUserId(analysisRequestDTO.getUserId());
 
         analysisRequestDTO.setReportMetadata(reportMetadata);
 
-        if ("Karlsplatz".equals(analysisRequestDTO.getStationFrom())) {
-            analysisService.queueForAnalysis(analysisRequestDTO, MessagePriority.High);
-        } else {
-            analysisService.queueForAnalysis(analysisRequestDTO, MessagePriority.Low);
-        }
-
-        return analysisResponseDTO;
+        // queue the request for analysis. one of our analysis servers is going to take care of the actual work
+        return analysisService.queueForAnalysis(analysisRequestDTO, messagePriority);
     }
 
 }

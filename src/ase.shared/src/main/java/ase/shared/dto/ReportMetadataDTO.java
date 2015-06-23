@@ -1,16 +1,16 @@
-package ase.reportStorage.model;
+package ase.shared.dto;
 
 import ase.shared.model.DataConcern;
 import ase.shared.model.ReportMetadata;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import ase.shared.model.analysis.Report;
+
+import java.io.Serializable;
 
 /**
  * Created by Michael on 23.06.2015.
  */
-@Document(collection = "reportmetedata")
-public class StoredReportMetadata extends ReportMetadata<DataConcern> {
-    @Id
+public class ReportMetadataDTO extends ReportMetadata<DataConcernDTO> implements Serializable {
+
     private String id;
 
     public String getId() {

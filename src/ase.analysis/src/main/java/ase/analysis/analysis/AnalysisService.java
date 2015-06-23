@@ -1,9 +1,9 @@
 package ase.analysis.analysis;
 
 import ase.analysis.Constants;
+import ase.analysis.analysis.model.TripAnalysis;
+import ase.analysis.analysis.model.TripsAnalysis;
 import ase.shared.commands.CreateResult;
-import ase.shared.model.analysis.TripAnalysisResult;
-import ase.shared.model.analysis.TripsAnalysis;
 import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
 import ase.analysis.analysis.prioritizedMessaging.PrioritizedJmsTemplate;
 import ase.analysis.analysis.prioritizedMessaging.PrioritizedMessage;
@@ -17,7 +17,6 @@ import ase.shared.model.simulation.Line;
 import ase.shared.model.simulation.RealtimeData;
 import ase.shared.model.simulation.Station;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -39,12 +38,12 @@ public class AnalysisService {
 
     public AnalysisResponseDTO queueForAnalysis(AnalysisRequestDTO analysisRequestDTO, MessagePriority messagePriority) {
 
-        System.out.println("Analysis started...");
+        System.out.println("Queuing analysis for user " + analysisRequestDTO.getUserId());
 
         AnalysisResponseDTO analysisResponseDTO = new AnalysisResponseDTO();
-        analysisResponseDTO.setOk(true);
 
-        //todo: validate request
+        // TODO: there should be some validation to make sure only valid requests are processed but, lets skip this for this mini project
+        analysisResponseDTO.setOk(true);
 
         // queue for analysis if request is valid
         if(analysisResponseDTO.isOk()) {
@@ -65,20 +64,20 @@ public class AnalysisService {
 
     @JmsListener(destination = Constants.ANALYSIS_QUEUE_NAME)
     public void jmsAnalyseTarget(AnalysisRequestDTO analysisRequestDTO) {
-        System.out.println("Analysis request received (JMS)");
+
+        System.out.println("Processing analysis request from user " + analysisRequestDTO.getUserId() + " for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo());
+
         List<Station> stations = Arrays.asList(commandFactory.getStationsBetweenCommand(analysisRequestDTO.getLine(), analysisRequestDTO.getStationFrom(), analysisRequestDTO.getStationTo()).getResult());
 
         if (stations.size() <= 1) {
             //useless analysis (bad request)
-            System.out.println("Bad request");
+            System.out.println("Bad request, stop analysis for user: " + analysisRequestDTO.getUserId());
             return;
         }
 
+        // get required input data for analysis (stations, directions, ...)
         List<Station> directions = Arrays.asList(commandFactory.getDirectionsCommand(analysisRequestDTO.getLine()).getResult());
-
-        //sort by position asc
         directions.sort((Station stationA, Station stationB) -> Integer.compare(stationA.getPosition(), stationB.getPosition()));
-
         Station directionLow = directions.get(0);
         Station directionHigh = directions.get(1);
 
@@ -87,20 +86,17 @@ public class AnalysisService {
 
         Station direction = entryStation.getPosition() < exitStation.getPosition() ? directionHigh : directionLow;
 
+        // perform actual analysis
         TripsAnalysis tripsAnalysis = analyzeRT(entryStation, exitStation, analysisRequestDTO.getLine(), direction.getName(), analysisRequestDTO.getFrom(), analysisRequestDTO.getTo());
         tripsAnalysis.analyze();
 
-        // start analyzing
+        // create report
+        Report report = createReport(analysisRequestDTO, stations, tripsAnalysis);
 
-        Report report = new Report();
-        report.setLines(Arrays.asList(new Line(analysisRequestDTO.getLine())));
-        report.setTime(new ReportTimeSpan(analysisRequestDTO.getFrom(), analysisRequestDTO.getTo()));
-        report.setStations(stations);
-
-        report.setTripsAnalysis(tripsAnalysis);
-
+        // save report
         CreateResult createResult = commandFactory.createReportCommand(report).getResult();
 
+        //save report metadata, required for evaluation
         if(createResult.isOk()) {
             analysisRequestDTO.getReportMetadata().setCreatedAt(new Date());
             analysisRequestDTO.getReportMetadata().setReportId(createResult.getLocation().substring(createResult.getLocation().lastIndexOf('/') + 1));
@@ -109,9 +105,36 @@ public class AnalysisService {
         else{
             System.out.println("Report failed, we don't care about such situations in this implementation. Should not happen anyway :)");
         }
-        System.out.println("Analysis finished (jms)");
+        System.out.println("Processing finished for user " + analysisRequestDTO.getUserId());
     }
 
+    /**
+     * creates the actual report from the analysis results
+     * @param analysisRequestDTO
+     * @param stations
+     * @param tripsAnalysis
+     * @return
+     */
+    private Report createReport(AnalysisRequestDTO analysisRequestDTO, List<Station> stations, TripsAnalysis tripsAnalysis) {
+        Report report = new Report();
+        report.setLines(Arrays.asList(new Line(analysisRequestDTO.getLine())));
+        report.setTime(new ReportTimeSpan(analysisRequestDTO.getFrom(), analysisRequestDTO.getTo()));
+        report.setStations(stations);
+
+        report.setTripsAnalysisResult(tripsAnalysis);
+        return report;
+    }
+
+    /**
+     * parses the realtime data into an analysis object
+     * @param entryStation
+     * @param exitStation
+     * @param line
+     * @param direction
+     * @param from
+     * @param to
+     * @return
+     */
     private TripsAnalysis analyzeRT(Station entryStation, Station exitStation, String line, String direction, Date from, Date to) {
         List<RealtimeData> entryStationRT = commandFactory.getRealtimeDataByStationAndTWCommand(line, direction, entryStation.getNumber(), from, to).toList();
         List<RealtimeData> exitStationRT = commandFactory.getRealtimeDataByStationAndTWCommand(line, direction, exitStation.getNumber(), from, to).toList();
@@ -148,7 +171,7 @@ public class AnalysisService {
 
         for (Integer tripNumber : entryArrivingTripRT.keySet()) {
 
-            TripAnalysisResult tripAnalysisResult = new TripAnalysisResult(tripNumber);
+            TripAnalysis tripAnalysisResult = new TripAnalysis(tripNumber);
             tripsAnalysis.addTrip(tripAnalysisResult);
 
             List<RealtimeData> entryRT = entryArrivingTripRT.get(tripNumber);

@@ -9,10 +9,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Michael on 23.06.2015.
  */
-public class TripsAnalysis {
-
-    @JsonIgnore
-    private final List<TripAnalysisResult> trips;
+public class TripsAnalysisResult {
 
     private int countAnalyzedRT;
     private Integer minimumStayTime;
@@ -25,46 +22,6 @@ public class TripsAnalysis {
     private int minimumTripTime;
     private double averageTripTime;
     private int maximumTripTime;
-
-    public TripsAnalysis() {
-        trips = new LinkedList<>();
-    }
-
-    public void addTrip(TripAnalysisResult tripAnalysisResult) {
-        trips.add(tripAnalysisResult);
-    }
-
-    public void analyze() {
-
-        if(trips.size() == 0) {
-            throw new IllegalArgumentException("Can't analyze due to missing TripAnalysisResults");
-        }
-
-        this.countAnalyzedRT = trips.size();
-        for (TripAnalysisResult trip : trips) {
-            trip.analyze();
-        }
-
-        IntSummaryStatistics entryStats = trips.stream().map(x -> x.getEntryStayTime().getSeconds()).mapToInt(x -> x).summaryStatistics();
-
-        this.minimumStayTime = entryStats.getMin();
-        this.maximumStayTime = entryStats.getMax();
-        this.averageStayTime = entryStats.getAverage();
-
-        IntSummaryStatistics tripStats = trips.stream().map(x -> x.getTripDuration().getSeconds()).mapToInt(x -> x).summaryStatistics();
-        this.minimumTripTime = tripStats.getMin();
-        this.maximumTripTime = entryStats.getMax();
-        this.averageTripTime = entryStats.getAverage();
-
-        List<DateTime> departureTimes = trips.stream().map(tripAnalysisResult -> tripAnalysisResult.getEntryDeparture()).collect(Collectors.toList());
-        DateTime dateTime = departureTimes.get(0);
-
-        LongSummaryStatistics longSummaryStatistics = departureTimes.stream().mapToLong(x -> x.getMillis()).summaryStatistics();
-
-        this.latestAverageDeparture = new DateTime((long)Math.floor(longSummaryStatistics.getAverage()), dateTime.getZone()).toDate();
-        this.latestMaxDeparture = new DateTime(longSummaryStatistics.getMax(), dateTime.getZone()).toDate();
-        this.latestMinDeparture = new DateTime(longSummaryStatistics.getMin(), dateTime.getZone()).toDate();
-    }
 
     public Integer getMinimumStayTime() {
         return minimumStayTime;

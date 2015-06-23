@@ -7,9 +7,11 @@ import java.util.List;
 /**
  * Created by Michael on 22.06.2015.
  */
-public class ReportMetadata implements Serializable {
+public class ReportMetadata<TDataConcern extends DataConcern> {
 
     private String reportId;
+
+    private String userId;
 
     private Integer priority;
 
@@ -17,7 +19,7 @@ public class ReportMetadata implements Serializable {
 
     private Date createdAt;
 
-    private List<DataConcern> dataConcerns;
+    private List<TDataConcern> dataConcerns;
 
     public Date getCreatedAt() {
         return createdAt;
@@ -51,11 +53,19 @@ public class ReportMetadata implements Serializable {
         this.priority = priority;
     }
 
-    public List<DataConcern> getDataConcerns() {
+    public List<TDataConcern> getDataConcerns() {
         return dataConcerns;
     }
 
-    public void setDataConcerns(List<DataConcern> dataConcerns) {
+    public void setDataConcerns(List<TDataConcern> dataConcerns) {
         this.dataConcerns = dataConcerns;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

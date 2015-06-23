@@ -31,24 +31,6 @@ public class TripAnalysisResult {
         this.tripNumber = tripNumber;
     }
 
-    /**
-     * calculates several values for this one trip
-     */
-    public void analyze() {
-        // get arrival date in entry station, exit date might be later if the train stayed in the station for some time
-        this.entryArrival = new DateTime(entryRT.get(0).getCurrentTime());
-        this.entryDeparture = new DateTime(entryRT.get(entryRT.size() - 1).getCurrentTime());      //obviously the next minute!! though might result in a timespan of 0 min due to sample data!
-
-        this.exitArrival = new DateTime(exitRT.get(0).getCurrentTime());
-
-        this.entryPlannedArrival = new DateTime(entryRT.get(0).getPlannedArrival());
-        this.exitPlannedArrival = new DateTime(exitRT.get(0).getPlannedArrival());
-        this.plannedTripDuration = Seconds.secondsBetween(entryPlannedArrival, exitPlannedArrival);
-
-        this.entryStayTime = Seconds.secondsBetween(entryArrival, entryDeparture);
-        this.tripDuration = Seconds.secondsBetween(entryDeparture, exitArrival);
-    }
-
     public Integer getTripNumber() {
         return tripNumber;
     }

@@ -1,9 +1,11 @@
 package ase.shared.dto;
 
+import java.io.Serializable;
+
 /**
  * Created by Michael on 21.06.2015.
  */
-public class AnalysisResponseDTO {
+public class AnalysisResponseDTO implements Serializable {
 
     private boolean ok;
 

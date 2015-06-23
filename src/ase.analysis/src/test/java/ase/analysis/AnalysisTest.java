@@ -2,6 +2,7 @@ package ase.analysis;
 
 import ase.analysis.analysis.AnalysisService;
 import ase.shared.dto.AnalysisRequestDTO;
+import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -33,9 +34,11 @@ public class AnalysisTest {
         analysisRequestDTO.setLine("U1");
         analysisRequestDTO.setStationFrom("Karlsplatz");
         analysisRequestDTO.setStationTo("Donauinsel");
+        analysisRequestDTO.setUserId("Unit-Test");
 
-        ReportMetadata reportMetadata = new ReportMetadata();
+        ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
         reportMetadata.setRequestedAt(new Date());
+        reportMetadata.setUserId(analysisRequestDTO.getUserId());
         analysisRequestDTO.setReportMetadata(reportMetadata);
 
         analysisService.jmsAnalyseTarget(analysisRequestDTO);

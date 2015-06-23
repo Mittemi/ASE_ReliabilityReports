@@ -12,12 +12,10 @@ public class StoredReport extends ase.shared.model.analysis.Report {
     @Id
     private String id;
 
-    @Override
     public String getId() {
         return id;
     }
 
-    @Override
     public void setId(String id) {
         this.id = id;
     }

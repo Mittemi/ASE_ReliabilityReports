@@ -3,7 +3,7 @@ package ase.evaluation.controller;
 import ase.evaluation.service.DataConcernEvaluatorBase;
 import ase.evaluation.service.DataConcernEvaluatorFactory;
 import ase.shared.commands.CommandFactory;
-import ase.shared.dto.DataConcernDTO;
+import ase.shared.dto.DataConcernListDTO;
 import ase.shared.model.analysis.Report;
 import ase.shared.enums.DataConcernType;
 import ase.shared.model.DataConcern;
@@ -26,9 +26,9 @@ public class DataConcernEvaluationController {
     private CommandFactory commandFactory;
 
     @RequestMapping(value = "{reportId}", produces = "application/json")
-    public DataConcernDTO evaluateReport(@PathVariable String reportId) {
+    public DataConcernListDTO evaluateReport(@PathVariable String reportId) {
 
-        DataConcernDTO dataConcernDTO = new DataConcernDTO();
+        DataConcernListDTO dataConcernDTO = new DataConcernListDTO();
         dataConcernDTO.setReportId(reportId);
 
         Report report = commandFactory.getReportByIdCommand(reportId).getSingleResult();

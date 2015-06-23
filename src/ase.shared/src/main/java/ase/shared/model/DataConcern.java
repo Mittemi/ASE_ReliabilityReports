@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by Michael on 20.06.2015.
  */
-public class DataConcern implements Serializable {
+public class DataConcern {
 
     private DataConcernType concernType;
 

@@ -1,39 +1,21 @@
 package ase.shared.dto;
 
+import ase.shared.model.notification.Notification;
+
 import java.io.Serializable;
 
 /**
  * Created by Michael on 19.06.2015.
  */
-public class NotificationDTO implements Serializable {
+public class NotificationDTO extends Notification implements Serializable {
 
-    private String email;
+    private String id;
 
-    private String subject;
-
-    private String message;
-
-    public String getEmail() {
-        return email;
+    public String getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -1,8 +1,6 @@
 package ase.shared.model.analysis;
 
-import ase.shared.model.analysis.TripAnalysisResult;
 import ase.shared.model.simulation.Line;
-import ase.shared.model.analysis.ReportTimeSpan;
 import ase.shared.model.simulation.Station;
 
 import java.util.LinkedList;
@@ -18,15 +16,13 @@ public class Report {
         lines = new LinkedList<>();
     }
 
-    private String id;
-
     private ReportTimeSpan time;
 
     private List<Line> lines;
 
     private List<Station> stations;
 
-    private TripsAnalysis tripsAnalysis;
+    private TripsAnalysisResult tripsAnalysisResult;
 
     public List<Line> getLines() {
         return lines;
@@ -52,19 +48,11 @@ public class Report {
         this.stations = stations;
     }
 
-    public String getId() {
-        return id;
+    public TripsAnalysisResult getTripsAnalysisResult() {
+        return tripsAnalysisResult;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public TripsAnalysis getTripsAnalysis() {
-        return tripsAnalysis;
-    }
-
-    public void setTripsAnalysis(TripsAnalysis tripsAnalysis) {
-        this.tripsAnalysis = tripsAnalysis;
+    public void setTripsAnalysisResult(TripsAnalysisResult tripsAnalysisResult) {
+        this.tripsAnalysisResult = tripsAnalysisResult;
     }
 }

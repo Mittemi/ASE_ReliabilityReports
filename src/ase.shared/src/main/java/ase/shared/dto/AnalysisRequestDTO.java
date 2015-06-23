@@ -14,6 +14,8 @@ import java.util.Date;
  */
 public class AnalysisRequestDTO implements Serializable {       //used as jms message!
 
+    private String userId;
+
     private String line;
 
     private String stationFrom;
@@ -29,7 +31,7 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
     private Date to;
 
     @JsonIgnore
-    private ReportMetadata reportMetadata;
+    private ReportMetadataDTO reportMetadata;
 
     public AnalysisRequestDTO() {
     }
@@ -74,11 +76,19 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
         this.to = to;
     }
 
-    public ReportMetadata getReportMetadata() {
+    public ReportMetadataDTO getReportMetadata() {
         return reportMetadata;
     }
 
-    public void setReportMetadata(ReportMetadata reportMetadata) {
+    public void setReportMetadata(ReportMetadataDTO reportMetadata) {
         this.reportMetadata = reportMetadata;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
