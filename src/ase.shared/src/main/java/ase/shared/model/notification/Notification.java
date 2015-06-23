@@ -1,5 +1,7 @@
 package ase.shared.model.notification;
 
+import java.util.Date;
+
 /**
  * Created by Michael on 23.06.2015.
  */
@@ -10,6 +12,8 @@ public class Notification {
     private String subject;
 
     private String message;
+
+    private Date date;
 
     public String getEmail() {
         return email;
@@ -33,5 +37,13 @@ public class Notification {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

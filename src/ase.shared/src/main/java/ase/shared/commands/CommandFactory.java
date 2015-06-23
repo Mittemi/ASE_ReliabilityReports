@@ -1,10 +1,13 @@
 package ase.shared.commands;
 
 import ase.shared.commands.datasource.*;
+import ase.shared.commands.notification.CreateNotificationCommand;
+import ase.shared.commands.notification.GetNotificationsByEmailCommand;
 import ase.shared.commands.reportstorage.*;
 import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
 import ase.shared.model.analysis.Report;
+import ase.shared.model.notification.Notification;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,5 +111,18 @@ public class CommandFactory {
 
     public GetRealtimeDataByTrainAndTWCommand getRealtimeDataByTrainAndTWCommand(String lineName, String direction, int trainNumber, Date from, Date to) {
         return autowire(new GetRealtimeDataByTrainAndTWCommand(DATASOURCE_URL, lineName, direction, trainNumber, from, to));
+    }
+
+
+    ////////////////////
+    //  NOTIFICATION  //
+    ////////////////////
+
+    public CreateNotificationCommand createNotificationCommand(Notification notification) {
+        return autowire(new CreateNotificationCommand(NOTIFICATION_URL, notification));
+    }
+
+    public GetNotificationsByEmailCommand getNotificationsByEmailCommand(String email) {
+        return autowire(new GetNotificationsByEmailCommand(NOTIFICATION_URL, email));
     }
 }

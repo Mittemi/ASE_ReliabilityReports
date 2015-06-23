@@ -13,6 +13,7 @@ import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.AnalysisResponseDTO;
 import ase.shared.model.analysis.Report;
 import ase.shared.model.analysis.ReportTimeSpan;
+import ase.shared.model.notification.Notification;
 import ase.shared.model.simulation.Line;
 import ase.shared.model.simulation.RealtimeData;
 import ase.shared.model.simulation.Station;
@@ -101,6 +102,16 @@ public class AnalysisService {
             analysisRequestDTO.getReportMetadata().setCreatedAt(new Date());
             analysisRequestDTO.getReportMetadata().setReportId(createResult.getLocation().substring(createResult.getLocation().lastIndexOf('/') + 1));
             commandFactory.createReportMetadataCommand(analysisRequestDTO.getReportMetadata()).execute();
+
+            Notification notification = new Notification();
+            notification.setEmail(analysisRequestDTO.getUserId());
+            notification.setSubject("Report finished");
+            notification.setDate(new Date());
+            notification.setMessage("The report for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo() + " has been finished!\n\n" +
+                    "ReportID: " + analysisRequestDTO.getReportMetadata().getReportId() + "\n\nThanks for using our service!");
+
+            CreateResult result = commandFactory.createNotificationCommand(notification).getResult();
+            // we don't care about the notification result :)
         }
         else{
             System.out.println("Report failed, we don't care about such situations in this implementation. Should not happen anyway :)");
