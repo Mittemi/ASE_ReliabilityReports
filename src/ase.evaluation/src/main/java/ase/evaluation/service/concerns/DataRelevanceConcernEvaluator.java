@@ -3,7 +3,6 @@ package ase.evaluation.service.concerns;
 import ase.evaluation.service.DataConcernEvaluatorBase;
 import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.analysis.Report;
 import ase.shared.enums.DataConcernType;
 
 /**

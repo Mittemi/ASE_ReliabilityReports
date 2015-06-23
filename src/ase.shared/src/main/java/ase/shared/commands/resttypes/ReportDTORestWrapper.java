@@ -1,7 +1,6 @@
 package ase.shared.commands.resttypes;
 
 import ase.shared.dto.ReportDTO;
-import ase.shared.model.analysis.Report;
 import org.springframework.hateoas.Resources;
 
 /**

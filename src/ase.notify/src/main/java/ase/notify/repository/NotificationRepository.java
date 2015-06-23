@@ -1,8 +1,6 @@
 package ase.notify.repository;
 
 import ase.notify.model.StoredNotification;
-import ase.shared.model.notification.Notification;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;

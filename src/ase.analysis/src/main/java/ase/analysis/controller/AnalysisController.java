@@ -2,13 +2,10 @@ package ase.analysis.controller;
 
 import ase.analysis.analysis.AnalysisService;
 import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
-import ase.shared.commands.CommandFactory;
 import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.AnalysisResponseDTO;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.ReportMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;

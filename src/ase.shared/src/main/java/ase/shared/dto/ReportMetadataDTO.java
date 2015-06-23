@@ -1,8 +1,6 @@
 package ase.shared.dto;
 
-import ase.shared.model.DataConcern;
 import ase.shared.model.ReportMetadata;
-import ase.shared.model.analysis.Report;
 
 import java.io.Serializable;
 

@@ -1,18 +1,10 @@
 package ase.shared.commands;
 
-import ase.shared.Constants;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.Resources;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Michael on 22.06.2015.

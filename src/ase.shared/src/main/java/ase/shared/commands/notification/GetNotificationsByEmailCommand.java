@@ -2,8 +2,6 @@ package ase.shared.commands.notification;
 
 import ase.shared.commands.GenericHATEOSGetCommand;
 import ase.shared.commands.resttypes.NotificationRestWrapper;
-import ase.shared.commands.resttypes.ReportDTORestWrapper;
-import ase.shared.dto.ReportDTO;
 import ase.shared.model.notification.Notification;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.hateoas.client.Traverson;

@@ -2,7 +2,9 @@ package ase.shared.model.analysis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Michael on 23.06.2015.

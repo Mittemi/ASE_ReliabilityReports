@@ -1,11 +1,8 @@
 package ase.evaluation.service;
 
 import ase.shared.commands.CommandFactory;
-import ase.shared.dto.DataConcernDTO;
 import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.ReportMetadata;
-import ase.shared.model.analysis.Report;
 import ase.shared.enums.DataConcernType;
 import ase.shared.model.DataConcern;
 import org.springframework.beans.factory.annotation.Autowired;

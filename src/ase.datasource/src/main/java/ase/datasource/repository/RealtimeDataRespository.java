@@ -1,13 +1,11 @@
 package ase.datasource.repository;
 
 import ase.datasource.model.StoredRealtimeData;
-import ase.shared.Constants;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 

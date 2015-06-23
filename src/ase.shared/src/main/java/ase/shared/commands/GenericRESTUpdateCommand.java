@@ -4,8 +4,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
-import java.net.URI;
-
 /**
  * Created by Michael on 23.06.2015.
  */

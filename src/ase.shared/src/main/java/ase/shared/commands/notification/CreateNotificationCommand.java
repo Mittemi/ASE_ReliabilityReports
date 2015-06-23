@@ -1,7 +1,6 @@
 package ase.shared.commands.notification;
 
 import ase.shared.commands.GenericRESTCreateCommand;
-import ase.shared.model.ReportMetadata;
 import ase.shared.model.notification.Notification;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;

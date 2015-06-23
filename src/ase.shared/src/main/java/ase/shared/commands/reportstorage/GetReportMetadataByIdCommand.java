@@ -3,7 +3,6 @@ package ase.shared.commands.reportstorage;
 import ase.shared.commands.GenericHATEOSGetCommand;
 import ase.shared.commands.resttypes.ReportMetadataDTORestWrapper;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.ReportMetadata;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.hateoas.client.Traverson;
 

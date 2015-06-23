@@ -4,12 +4,11 @@ import ase.evaluation.service.DataConcernEvaluatorBase;
 import ase.evaluation.service.DataConcernEvaluatorFactory;
 import ase.shared.ASEModelMapper;
 import ase.shared.commands.CommandFactory;
+import ase.shared.commands.UpdateResult;
 import ase.shared.dto.DataConcernDTO;
 import ase.shared.dto.DataConcernListDTO;
 import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.ReportMetadata;
-import ase.shared.model.analysis.Report;
 import ase.shared.enums.DataConcernType;
 import ase.shared.model.DataConcern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by Michael on 20.06.2015.
  */
 @RestController
-@RequestMapping(value = "/")
 public class DataConcernEvaluationController {
 
     @Autowired
@@ -34,16 +32,16 @@ public class DataConcernEvaluationController {
     private ASEModelMapper modelMapper;
 
     @RequestMapping(value = "evaluate/{reportId}", produces = "application/json")
-    public DataConcernListDTO evaluateReport(@PathVariable String reportId) {
+    public DataConcernListDTO evaluateReport(@PathVariable("reportId") String reportId) {
 
         DataConcernListDTO dataConcernDTO = new DataConcernListDTO();
         dataConcernDTO.setReportId(reportId);
 
         ReportDTO report = commandFactory.getReportByIdCommand(reportId).getSingleResult();
-        ReportMetadataDTO reportMetadataDTO = commandFactory.getReportMetadataByIdCommand(reportId).getSingleResult();
+        ReportMetadataDTO reportMetadataDTO = commandFactory.getReportMetadataByReportIdCommand(reportId).getSingleResult();
 
         // if already calculated, return them
-        if(reportMetadataDTO.getDataConcerns().size() > 0) {
+        if(reportMetadataDTO.getDataConcerns() != null && reportMetadataDTO.getDataConcerns().size() > 0) {
             reportMetadataDTO.getDataConcerns().forEach(dataConcern -> dataConcernDTO.getDataConcerns().add(modelMapper.map(dataConcern, DataConcernDTO.class)));
             return dataConcernDTO;
         }
@@ -62,7 +60,7 @@ public class DataConcernEvaluationController {
         }
         reportMetadataDTO.setDataConcerns(dataConcernDTO.getDataConcerns());
 
-        commandFactory.updateReportMetadataCommand(reportMetadataDTO).getResult();
+        UpdateResult result = commandFactory.updateReportMetadataCommand(reportMetadataDTO).getResult();
 
         return dataConcernDTO;
     }

@@ -4,7 +4,6 @@ import ase.evaluation.service.DataConcernEvaluatorBase;
 import ase.shared.commands.CommandFactory;
 import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.analysis.Report;
 import ase.shared.enums.DataConcernType;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,10 +1,7 @@
 package ase.shared.commands.reportstorage;
 
-import ase.shared.commands.GenericRESTCommand;
 import ase.shared.commands.GenericRESTCreateCommand;
 import ase.shared.model.ReportMetadata;
-import ase.shared.model.analysis.Report;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 

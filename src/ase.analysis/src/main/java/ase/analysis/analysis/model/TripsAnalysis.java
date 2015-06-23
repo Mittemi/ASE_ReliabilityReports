@@ -1,13 +1,10 @@
 package ase.analysis.analysis.model;
 
 
-import ase.shared.model.analysis.TripAnalysisResult;
 import ase.shared.model.analysis.TripsAnalysisResult;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
 import java.util.IntSummaryStatistics;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.stream.Collectors;

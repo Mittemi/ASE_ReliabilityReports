@@ -1,7 +1,5 @@
 package ase.shared.model.simulation;
 
-import org.springframework.hateoas.ResourceSupport;
-
 import java.util.Date;
 
 /**

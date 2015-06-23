@@ -1,7 +1,6 @@
 package ase.shared.dto;
 
 import ase.shared.Constants;
-import ase.shared.model.ReportMetadata;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;

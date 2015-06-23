@@ -3,7 +3,6 @@ package ase.reportStorage.repository;
 import ase.reportStorage.model.StoredReport;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 /**

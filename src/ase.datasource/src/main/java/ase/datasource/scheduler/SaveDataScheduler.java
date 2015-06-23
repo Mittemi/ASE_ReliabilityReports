@@ -3,10 +3,8 @@ package ase.datasource.scheduler;
 import ase.datasource.model.StoredRealtimeData;
 import ase.datasource.repository.RealtimeDataRespository;
 import ase.datasource.simulation.DataSimulation;
-import ase.shared.model.simulation.RealtimeData;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;

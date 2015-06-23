@@ -32,7 +32,7 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/metadata/{reportId}")
-    @HystrixCommand(fallbackMethod = "getReportMetadataFallback")
+    //@HystrixCommand(fallbackMethod = "getReportMetadataFallback")
     public DataConcernDTO getReportMetadata(@PathVariable String reportId) {
         return commandFactory.getDataConcernsCommand(reportId).getResult();
     }

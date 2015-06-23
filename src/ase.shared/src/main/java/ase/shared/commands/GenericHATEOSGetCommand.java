@@ -5,13 +5,11 @@ import org.springframework.hateoas.client.Traverson;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * Created by Michael on 20.06.2015.

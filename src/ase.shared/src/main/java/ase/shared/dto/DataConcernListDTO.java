@@ -1,7 +1,5 @@
 package ase.shared.dto;
 
-import ase.shared.model.DataConcern;
-
 import java.util.LinkedList;
 import java.util.List;
 

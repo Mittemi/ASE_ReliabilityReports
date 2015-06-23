@@ -4,7 +4,6 @@ import ase.evaluation.service.DataConcernEvaluatorBase;
 import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.enums.DataConcernType;
-import ase.shared.model.analysis.Report;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 

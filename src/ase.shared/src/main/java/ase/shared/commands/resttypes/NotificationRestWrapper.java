@@ -1,6 +1,5 @@
 package ase.shared.commands.resttypes;
 
-import ase.shared.dto.NotificationDTO;
 import ase.shared.model.notification.Notification;
 import org.springframework.hateoas.Resources;
 

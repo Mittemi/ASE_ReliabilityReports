@@ -1,7 +1,6 @@
 package ase.shared.commands.resttypes;
 
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.ReportMetadata;
 import org.springframework.hateoas.Resources;
 
 

@@ -7,7 +7,7 @@
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
-  <name>ASE - WL reliability reports</name>
+  <name>ASE - reliability reports</name>
   <description>ASE mini project</description>
 
   <parent>

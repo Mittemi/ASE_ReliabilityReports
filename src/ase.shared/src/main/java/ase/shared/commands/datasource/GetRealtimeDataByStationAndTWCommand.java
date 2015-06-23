@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.hateoas.client.Traverson;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
