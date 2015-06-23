@@ -22,7 +22,7 @@ public class Report {
 
     private List<Station> stations;
 
-    private TripsAnalysisResult tripsAnalysisResult;
+    private TripsAnalysisResult<? extends TripAnalysisResult> tripsAnalysisResult;
 
     public List<Line> getLines() {
         return lines;
@@ -48,11 +48,11 @@ public class Report {
         this.stations = stations;
     }
 
-    public TripsAnalysisResult getTripsAnalysisResult() {
+    public TripsAnalysisResult<? extends TripAnalysisResult> getTripsAnalysisResult() {
         return tripsAnalysisResult;
     }
 
-    public void setTripsAnalysisResult(TripsAnalysisResult tripsAnalysisResult) {
+    public void setTripsAnalysisResult(TripsAnalysisResult<? extends TripAnalysisResult> tripsAnalysisResult) {
         this.tripsAnalysisResult = tripsAnalysisResult;
     }
 }

@@ -7,3 +7,6 @@ src/ase.shared/target/
 src/ase.shared/gradle/
 src/ase.shared/gradlew
 src/ase.shared/gradlew.bat
+src/ase.notify/target/
+src/ase.apiGateway/target/
+src/ase.evaluation/target/

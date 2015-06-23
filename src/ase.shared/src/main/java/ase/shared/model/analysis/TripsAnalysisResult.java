@@ -1,15 +1,28 @@
 package ase.shared.model.analysis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.joda.time.DateTime;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Michael on 23.06.2015.
  */
-public class TripsAnalysisResult {
+public class TripsAnalysisResult<TModel extends  TripAnalysisResult> {
+
+    public TripsAnalysisResult() {
+        tripAnalysisResults = new LinkedList<>();
+    }
+
+    @JsonIgnore
+    private final List<TModel> tripAnalysisResults;
+
+    public void addTrip(TModel tripAnalysisResult) {
+        tripAnalysisResults.add(tripAnalysisResult);
+    }
+
+    public List<TModel> getTripAnalysisResults() {
+        return tripAnalysisResults;
+    }
 
     private int countAnalyzedRT;
     private Integer minimumStayTime;
