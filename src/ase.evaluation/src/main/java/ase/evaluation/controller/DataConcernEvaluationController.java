@@ -2,8 +2,13 @@ package ase.evaluation.controller;
 
 import ase.evaluation.service.DataConcernEvaluatorBase;
 import ase.evaluation.service.DataConcernEvaluatorFactory;
+import ase.shared.ASEModelMapper;
 import ase.shared.commands.CommandFactory;
+import ase.shared.dto.DataConcernDTO;
 import ase.shared.dto.DataConcernListDTO;
+import ase.shared.dto.ReportDTO;
+import ase.shared.dto.ReportMetadataDTO;
+import ase.shared.model.ReportMetadata;
 import ase.shared.model.analysis.Report;
 import ase.shared.enums.DataConcernType;
 import ase.shared.model.DataConcern;
@@ -25,13 +30,17 @@ public class DataConcernEvaluationController {
     @Autowired
     private CommandFactory commandFactory;
 
+    @Autowired
+    private ASEModelMapper modelMapper;
+
     @RequestMapping(value = "{reportId}", produces = "application/json")
     public DataConcernListDTO evaluateReport(@PathVariable String reportId) {
 
         DataConcernListDTO dataConcernDTO = new DataConcernListDTO();
         dataConcernDTO.setReportId(reportId);
 
-        Report report = commandFactory.getReportByIdCommand(reportId).getSingleResult();
+        ReportDTO report = commandFactory.getReportByIdCommand(reportId).getSingleResult();
+        ReportMetadataDTO reportMetadataDTO = commandFactory.getReportMetadataByIdCommand(reportId).getSingleResult();
 
         // for all supported data concerns
         for (DataConcernType type : DataConcernType.values()) {
@@ -40,11 +49,15 @@ public class DataConcernEvaluationController {
             DataConcernEvaluatorBase dataConcernEvaluatorBase = factory.getEvaluator(type);
 
             // evaluate the report using the evaluator
-            DataConcern dataConcern = dataConcernEvaluatorBase.evaluateConcern(report);
+            DataConcern dataConcern = dataConcernEvaluatorBase.evaluateConcern(report, reportMetadataDTO);
 
             // add the result
-            dataConcernDTO.getDataConcerns().add(dataConcern);
+            dataConcernDTO.getDataConcerns().add(modelMapper.map(dataConcern, DataConcernDTO.class));
         }
+        reportMetadataDTO.setDataConcerns(dataConcernDTO.getDataConcerns());
+
+        commandFactory.updateReportMetadataCommand(reportMetadataDTO).getResult();
+
         return dataConcernDTO;
     }
 }

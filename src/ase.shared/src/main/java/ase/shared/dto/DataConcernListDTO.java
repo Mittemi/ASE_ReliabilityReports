@@ -12,17 +12,17 @@ public class DataConcernListDTO {
 
     private String reportId;
 
-    private List<DataConcern> dataConcerns;
+    private List<DataConcernDTO> dataConcerns;
 
     public DataConcernListDTO() {
-        dataConcerns = new LinkedList<DataConcern>();
+        dataConcerns = new LinkedList<>();
     }
 
-    public List<DataConcern> getDataConcerns() {
+    public List<DataConcernDTO> getDataConcerns() {
         return dataConcerns;
     }
 
-    public void setDataConcerns(List<DataConcern> dataConcerns) {
+    public void setDataConcerns(List<DataConcernDTO> dataConcerns) {
         this.dataConcerns = dataConcerns;
     }
 

@@ -1,6 +1,7 @@
 package ase.evaluation.service;
 
 import ase.evaluation.service.concerns.DataRelevanceConcernEvaluator;
+import ase.evaluation.service.concerns.EvaluationPerformanceConcernEvaluator;
 import ase.evaluation.service.concerns.SamplingRateConcernEvaluator;
 import ase.shared.enums.DataConcernType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class DataConcernEvaluatorFactory {
                 break;
             case DataRelevance:
                 dataConcernEvaluatorBase = new DataRelevanceConcernEvaluator();
+                break;
+            case EvaluationPerformance:
+                dataConcernEvaluatorBase = new EvaluationPerformanceConcernEvaluator();
                 break;
         }
 

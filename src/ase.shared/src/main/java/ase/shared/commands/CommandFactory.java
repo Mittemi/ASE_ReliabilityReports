@@ -1,10 +1,8 @@
 package ase.shared.commands;
 
 import ase.shared.commands.datasource.*;
-import ase.shared.commands.reportstorage.CreateReportCommand;
-import ase.shared.commands.reportstorage.CreateReportMetadataCommand;
-import ase.shared.commands.reportstorage.GetReportByIdCommand;
-import ase.shared.commands.reportstorage.GetReportMetadataByIdCommand;
+import ase.shared.commands.reportstorage.*;
+import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
 import ase.shared.model.analysis.Report;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -70,9 +68,12 @@ public class CommandFactory {
         return autowire(new GetReportMetadataByIdCommand(REPORT_STORAGE_URL, reportId));
     }
 
-
     public CreateReportMetadataCommand createReportMetadataCommand(ReportMetadata report) {
         return autowire(new CreateReportMetadataCommand(REPORT_STORAGE_URL, report));
+    }
+
+    public UpdateReportMetadataCommand updateReportMetadataCommand(ReportMetadataDTO report) {
+        return autowire(new UpdateReportMetadataCommand(REPORT_STORAGE_URL, report));
     }
 
     //////////////////

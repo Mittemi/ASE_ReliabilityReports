@@ -78,9 +78,9 @@
     <!-- Google -->
 
     <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
-      <version>1.0</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
     </dependency>
 
     <!-- Time -->
@@ -91,6 +91,13 @@
       <version>2.8.1</version>
     </dependency>
 
+    <!-- Model Mapper -->
+
+    <dependency>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
+      <version>0.7.4</version>
+    </dependency>
 
   </dependencies>
 
