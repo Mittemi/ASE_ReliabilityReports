@@ -1,6 +1,7 @@
 package ase.shared.commands;
 
 import ase.shared.commands.datasource.*;
+import ase.shared.commands.evaluation.GetDataConcernsCommand;
 import ase.shared.commands.notification.CreateNotificationCommand;
 import ase.shared.commands.notification.GetNotificationsByEmailCommand;
 import ase.shared.commands.reportstorage.*;
@@ -124,5 +125,13 @@ public class CommandFactory {
 
     public GetNotificationsByEmailCommand getNotificationsByEmailCommand(String email) {
         return autowire(new GetNotificationsByEmailCommand(NOTIFICATION_URL, email));
+    }
+
+    //////////////////
+    //  EVALUATION  //
+    //////////////////
+
+    public GetDataConcernsCommand getDataConcernsCommand(String reportId) {
+        return autowire(new GetDataConcernsCommand(EVALUATION_URL, reportId));
     }
 }

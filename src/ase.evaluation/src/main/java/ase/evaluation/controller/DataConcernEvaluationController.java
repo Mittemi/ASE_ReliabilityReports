@@ -42,6 +42,12 @@ public class DataConcernEvaluationController {
         ReportDTO report = commandFactory.getReportByIdCommand(reportId).getSingleResult();
         ReportMetadataDTO reportMetadataDTO = commandFactory.getReportMetadataByIdCommand(reportId).getSingleResult();
 
+        // if already calculated, return them
+        if(reportMetadataDTO.getDataConcerns().size() > 0) {
+            reportMetadataDTO.getDataConcerns().forEach(dataConcern -> dataConcernDTO.getDataConcerns().add(modelMapper.map(dataConcern, DataConcernDTO.class)));
+            return dataConcernDTO;
+        }
+
         // for all supported data concerns
         for (DataConcernType type : DataConcernType.values()) {
 
