@@ -1,20 +1,19 @@
-package ase.shared.dto;
+package ase.shared.model.analysis;
 
+import ase.shared.model.analysis.TripAnalysisResult;
 import ase.shared.model.simulation.Line;
-import ase.shared.model.ReportTimeSpan;
+import ase.shared.model.analysis.ReportTimeSpan;
 import ase.shared.model.simulation.Station;
-import ase.shared.model.Statistics;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by Michael on 20.06.2015.
  */
-public class ReportDTO {
+public class Report {
 
-    public ReportDTO() {
+    public Report() {
         stations = new LinkedList<>();
         lines = new LinkedList<>();
     }
@@ -27,7 +26,7 @@ public class ReportDTO {
 
     private List<Station> stations;
 
-    private Statistics statistics;
+    private TripsAnalysis tripsAnalysis;
 
     public List<Line> getLines() {
         return lines;
@@ -53,19 +52,19 @@ public class ReportDTO {
         this.stations = stations;
     }
 
-    public Statistics getStatistics() {
-        return statistics;
-    }
-
-    public void setStatistics(Statistics statistics) {
-        this.statistics = statistics;
-    }
-
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public TripsAnalysis getTripsAnalysis() {
+        return tripsAnalysis;
+    }
+
+    public void setTripsAnalysis(TripsAnalysis tripsAnalysis) {
+        this.tripsAnalysis = tripsAnalysis;
     }
 }

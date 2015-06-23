@@ -2,10 +2,12 @@ package ase.shared.model;
 
 import ase.shared.enums.DataConcernType;
 
+import java.io.Serializable;
+
 /**
  * Created by Michael on 20.06.2015.
  */
-public class DataConcern {
+public class DataConcern implements Serializable {
 
     private DataConcernType concernType;
 

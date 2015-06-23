@@ -1,6 +1,7 @@
 package ase.shared.dto;
 
 import ase.shared.Constants;
+import ase.shared.model.ReportMetadata;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,15 +29,7 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
     private Date to;
 
     @JsonIgnore
-    private Date requestedAt;
-
-    public Date getRequestedAt() {
-        return requestedAt;
-    }
-
-    public void setRequestedAt(Date requestedAt) {
-        this.requestedAt = requestedAt;
-    }
+    private ReportMetadata reportMetadata;
 
     public AnalysisRequestDTO() {
     }
@@ -79,5 +72,13 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
 
     public void setTo(Date to) {
         this.to = to;
+    }
+
+    public ReportMetadata getReportMetadata() {
+        return reportMetadata;
+    }
+
+    public void setReportMetadata(ReportMetadata reportMetadata) {
+        this.reportMetadata = reportMetadata;
     }
 }

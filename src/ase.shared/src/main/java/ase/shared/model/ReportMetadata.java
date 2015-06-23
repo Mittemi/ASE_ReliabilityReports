@@ -1,12 +1,13 @@
 package ase.shared.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Michael on 22.06.2015.
  */
-public class ReportMetadata {
+public class ReportMetadata implements Serializable {
 
     private String reportId;
 

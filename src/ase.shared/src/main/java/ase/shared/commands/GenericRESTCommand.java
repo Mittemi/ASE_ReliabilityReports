@@ -17,14 +17,14 @@ import java.util.List;
 /**
  * Created by Michael on 22.06.2015.
  */
-public abstract class GenericGetCommand<TRequest, TModel> {
+public abstract class GenericRESTCommand<TRequest, TModel> {
 
     @Autowired
     private RestTemplate restTemplate;
 
     private ParameterizedTypeReference<TModel> typeReference;
 
-    protected GenericGetCommand(ParameterizedTypeReference<TModel> typeReference) {
+    protected GenericRESTCommand(ParameterizedTypeReference<TModel> typeReference) {
 
         this.typeReference = typeReference;
     }

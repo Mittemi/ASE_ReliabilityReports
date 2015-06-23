@@ -5,6 +5,7 @@ import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
 import ase.shared.commands.CommandFactory;
 import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.AnalysisResponseDTO;
+import ase.shared.model.ReportMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +35,10 @@ public class AnalysisController {
 
         analysisResponseDTO.setOk(true);
 
-        analysisRequestDTO.setRequestedAt(new Date());
+        ReportMetadata reportMetadata = new ReportMetadata();
+        reportMetadata.setRequestedAt(new Date());
+
+        analysisRequestDTO.setReportMetadata(reportMetadata);
 
         if ("Karlsplatz".equals(analysisRequestDTO.getStationFrom())) {
             analysisService.queueForAnalysis(analysisRequestDTO, MessagePriority.High);

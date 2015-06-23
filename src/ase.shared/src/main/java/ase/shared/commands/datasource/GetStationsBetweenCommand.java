@@ -1,6 +1,6 @@
 package ase.shared.commands.datasource;
 
-import ase.shared.commands.GenericGetCommand;
+import ase.shared.commands.GenericRESTCommand;
 import ase.shared.model.simulation.Station;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -11,7 +11,7 @@ import java.net.URI;
 /**
  * Created by Michael on 22.06.2015.
  */
-public class GetStationsBetweenCommand extends GenericGetCommand<String, Station[]> {
+public class GetStationsBetweenCommand extends GenericRESTCommand<String, Station[]> {
 
     private String lineName;
     private final String stationA;

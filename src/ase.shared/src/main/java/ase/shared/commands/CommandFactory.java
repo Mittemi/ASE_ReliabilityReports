@@ -1,7 +1,12 @@
 package ase.shared.commands;
 
 import ase.shared.commands.datasource.*;
+import ase.shared.commands.reportstorage.CreateReportCommand;
+import ase.shared.commands.reportstorage.CreateReportMetadataCommand;
 import ase.shared.commands.reportstorage.GetReportByIdCommand;
+import ase.shared.commands.reportstorage.GetReportMetadataByIdCommand;
+import ase.shared.model.ReportMetadata;
+import ase.shared.model.analysis.Report;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +45,9 @@ public class CommandFactory {
     }
 
     //TODO: remove . from url (fiddler)
-    private final String REPORT_STORAGE_URL = "http://localhost.:9000";
+    private final String REPORT_STORAGE_URL = "http://localhost.:9100";
     private final String DATASOURCE_URL = "http://localhost.:9999";
+    private final String NOTIFICATION_URL = "http://localhost.:9200";
 
     private <T> T autowire(T command) {
         autowireCapableBeanFactory.autowireBean(command);
@@ -54,6 +60,19 @@ public class CommandFactory {
 
     public GetReportByIdCommand getReportByIdCommand(String reportId) {
         return autowire(new GetReportByIdCommand(REPORT_STORAGE_URL, reportId));
+    }
+
+    public CreateReportCommand createReportCommand(Report report) {
+        return autowire(new CreateReportCommand(REPORT_STORAGE_URL, report));
+    }
+
+    public GetReportMetadataByIdCommand getReportMetadataByIdCommand(String reportId) {
+        return autowire(new GetReportMetadataByIdCommand(REPORT_STORAGE_URL, reportId));
+    }
+
+
+    public CreateReportMetadataCommand createReportMetadataCommand(ReportMetadata report) {
+        return autowire(new CreateReportMetadataCommand(REPORT_STORAGE_URL, report));
     }
 
     //////////////////
@@ -71,7 +90,6 @@ public class CommandFactory {
     public GetStationsBetweenCommand getStationsBetweenCommand(String line, String stationA, String stationB) {
         return autowire(new GetStationsBetweenCommand(DATASOURCE_URL, line, stationA, stationB));
     }
-
 
     public GetDirectionsCommand getDirectionsCommand(String line) {
         return autowire(new GetDirectionsCommand(DATASOURCE_URL, line));

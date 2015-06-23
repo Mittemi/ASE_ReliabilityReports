@@ -1,4 +1,4 @@
-package ase.shared.model;
+package ase.shared.model.analysis;
 
 import java.util.Date;
 
