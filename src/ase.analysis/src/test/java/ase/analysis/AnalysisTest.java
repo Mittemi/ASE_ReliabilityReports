@@ -1,6 +1,7 @@
 package ase.analysis;
 
 import ase.analysis.analysis.AnalysisService;
+import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
 import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
@@ -39,6 +40,7 @@ public class AnalysisTest {
         ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
         reportMetadata.setRequestedAt(new Date());
         reportMetadata.setUserId(analysisRequestDTO.getUserId());
+        reportMetadata.setPriority(MessagePriority.Medium.getValue());
         analysisRequestDTO.setReportMetadata(reportMetadata);
 
         analysisService.jmsAnalyseTarget(analysisRequestDTO);

@@ -11,6 +11,8 @@ import org.joda.time.Seconds;
 /**
  * Created by Michael on 23.06.2015.
  *
+ * D-A-A-S Concern: Analysis Performance
+ *
  * Evaluates the time required for report creation:
  *  - if this value is below a certain threshold we should consider spawning new analysis instances to improve performance
  *  - if this value is above a certain threshold we should consider shutting down some analysis instances to reduce costs

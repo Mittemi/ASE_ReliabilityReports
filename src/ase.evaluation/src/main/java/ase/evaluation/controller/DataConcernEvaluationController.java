@@ -33,7 +33,7 @@ public class DataConcernEvaluationController {
     @Autowired
     private ASEModelMapper modelMapper;
 
-    @RequestMapping(value = "{reportId}", produces = "application/json")
+    @RequestMapping(value = "evaluate/{reportId}", produces = "application/json")
     public DataConcernListDTO evaluateReport(@PathVariable String reportId) {
 
         DataConcernListDTO dataConcernDTO = new DataConcernListDTO();

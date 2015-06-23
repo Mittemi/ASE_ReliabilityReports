@@ -36,8 +36,8 @@ public class TripsAnalysis extends TripsAnalysisResult<TripAnalysis> {
 
         IntSummaryStatistics tripStats = getTripAnalysisResults().stream().map(x -> x.getTripDuration().getSeconds()).mapToInt(x -> x).summaryStatistics();
         setMinimumTripTime(tripStats.getMin());
-        setMaximumTripTime(entryStats.getMax());
-        setAverageTripTime(entryStats.getAverage());
+        setMaximumTripTime(tripStats.getMax());
+        setAverageTripTime(tripStats.getAverage());
 
         List<DateTime> departureTimes = getTripAnalysisResults().stream().map(tripAnalysisResult -> tripAnalysisResult.getEntryDeparture()).collect(Collectors.toList());
         DateTime dateTime = departureTimes.get(0);

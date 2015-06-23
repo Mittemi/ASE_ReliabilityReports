@@ -4,6 +4,7 @@ import ase.shared.commands.GenericHATEOSGetCommand;
 import ase.shared.dto.ReportDTO;
 import ase.shared.model.analysis.Report;
 import ase.shared.commands.resttypes.ReportDTORestWrapper;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.hateoas.client.Traverson;
 
 /**
@@ -20,6 +21,6 @@ public class GetReportByIdCommand extends GenericHATEOSGetCommand<ReportDTORestW
 
     @Override
     protected Traverson.TraversalBuilder initBuilder(Traverson traverson) {
-        return traverson.follow("storedReports", "search", "findById", id);
+        return traverson.follow("storedReports", "search", "findById").withTemplateParameters(ImmutableMap.of("id", id));
     }
 }

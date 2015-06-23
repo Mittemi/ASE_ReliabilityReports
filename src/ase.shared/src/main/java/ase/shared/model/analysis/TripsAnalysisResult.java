@@ -14,7 +14,7 @@ public class TripsAnalysisResult<TModel extends  TripAnalysisResult> {
     }
 
     @JsonIgnore
-    private final List<TModel> tripAnalysisResults;
+    private List<TModel> tripAnalysisResults;
 
     public void addTrip(TModel tripAnalysisResult) {
         tripAnalysisResults.add(tripAnalysisResult);
@@ -22,6 +22,10 @@ public class TripsAnalysisResult<TModel extends  TripAnalysisResult> {
 
     public List<TModel> getTripAnalysisResults() {
         return tripAnalysisResults;
+    }
+
+    public void setTripAnalysisResults(List<TModel> tripAnalysisResults) {
+        this.tripAnalysisResults = tripAnalysisResults;
     }
 
     private int countAnalyzedRT;

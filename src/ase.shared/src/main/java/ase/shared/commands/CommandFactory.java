@@ -46,6 +46,8 @@ public class CommandFactory {
     private final String REPORT_STORAGE_URL = "http://localhost.:9100";
     private final String DATASOURCE_URL = "http://localhost.:9999";
     private final String NOTIFICATION_URL = "http://localhost.:9200";
+    private final String EVALUATION_URL = "http://localhost.:9300";
+    private final String ANALYSIS_URL = "http://localhost.:9090";
 
     private <T> T autowire(T command) {
         autowireCapableBeanFactory.autowireBean(command);
@@ -56,16 +58,20 @@ public class CommandFactory {
     //  REPORTS  //
     ///////////////
 
-    public GetReportByIdCommand getReportByIdCommand(String reportId) {
-        return autowire(new GetReportByIdCommand(REPORT_STORAGE_URL, reportId));
+    public GetReportByIdCommand getReportByIdCommand(String id) {
+        return autowire(new GetReportByIdCommand(REPORT_STORAGE_URL, id));
     }
 
     public CreateReportCommand createReportCommand(Report report) {
         return autowire(new CreateReportCommand(REPORT_STORAGE_URL, report));
     }
 
-    public GetReportMetadataByIdCommand getReportMetadataByIdCommand(String reportId) {
-        return autowire(new GetReportMetadataByIdCommand(REPORT_STORAGE_URL, reportId));
+    public GetReportMetadataByIdCommand getReportMetadataByIdCommand(String id) {
+        return autowire(new GetReportMetadataByIdCommand(REPORT_STORAGE_URL, id));
+    }
+
+    public GetReportMetadataByReportIdCommand getReportMetadataByReportIdCommand(String reportId) {
+        return autowire(new GetReportMetadataByReportIdCommand(REPORT_STORAGE_URL, reportId));
     }
 
     public CreateReportMetadataCommand createReportMetadataCommand(ReportMetadata report) {
