@@ -19,7 +19,7 @@ import java.util.List;
  */
 public abstract class GenericRESTCommand<TRequest, TModel> {
 
-    @Autowired
+        @Autowired
     private RestTemplate restTemplate;
 
     private ParameterizedTypeReference<TModel> typeReference;

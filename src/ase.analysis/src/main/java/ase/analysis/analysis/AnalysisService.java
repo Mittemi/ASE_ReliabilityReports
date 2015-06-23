@@ -1,6 +1,7 @@
 package ase.analysis.analysis;
 
 import ase.analysis.Constants;
+import ase.shared.commands.CreateResult;
 import ase.shared.model.analysis.TripAnalysisResult;
 import ase.shared.model.analysis.TripsAnalysis;
 import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
@@ -98,12 +99,16 @@ public class AnalysisService {
 
         report.setTripsAnalysis(tripsAnalysis);
 
-        ResponseEntity<Object> execute = commandFactory.createReportCommand(report).execute();
+        CreateResult createResult = commandFactory.createReportCommand(report).getResult();
 
-
-        analysisRequestDTO.getReportMetadata().setCreatedAt(new Date());
-        commandFactory.createReportMetadataCommand(analysisRequestDTO.getReportMetadata()).execute();
-
+        if(createResult.isOk()) {
+            analysisRequestDTO.getReportMetadata().setCreatedAt(new Date());
+            analysisRequestDTO.getReportMetadata().setReportId(createResult.getLocation().substring(createResult.getLocation().lastIndexOf('/') + 1));
+            commandFactory.createReportMetadataCommand(analysisRequestDTO.getReportMetadata()).execute();
+        }
+        else{
+            System.out.println("Report failed, we don't care about such situations in this implementation. Should not happen anyway :)");
+        }
         System.out.println("Analysis finished (jms)");
     }
 

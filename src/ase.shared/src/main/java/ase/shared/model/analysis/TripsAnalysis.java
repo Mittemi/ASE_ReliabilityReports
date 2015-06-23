@@ -3,10 +3,7 @@ package ase.shared.model.analysis;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
-import java.util.IntSummaryStatistics;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.LongSummaryStatistics;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,9 +19,9 @@ public class TripsAnalysis {
     private Integer maximumStayTime;
     private double averageStayTime;
 
-    private DateTime latestMinDeparture;
-    private DateTime latestAverageDeparture;
-    private DateTime latestMaxDeparture;
+    private Date latestMinDeparture;
+    private Date latestAverageDeparture;
+    private Date latestMaxDeparture;
     private int minimumTripTime;
     private double averageTripTime;
     private int maximumTripTime;
@@ -64,9 +61,9 @@ public class TripsAnalysis {
 
         LongSummaryStatistics longSummaryStatistics = departureTimes.stream().mapToLong(x -> x.getMillis()).summaryStatistics();
 
-        this.latestAverageDeparture = new DateTime((long)Math.floor(longSummaryStatistics.getAverage()), dateTime.getZone());
-        this.latestMaxDeparture = new DateTime(longSummaryStatistics.getMax(), dateTime.getZone());
-        this.latestMinDeparture = new DateTime(longSummaryStatistics.getMin(), dateTime.getZone());
+        this.latestAverageDeparture = new DateTime((long)Math.floor(longSummaryStatistics.getAverage()), dateTime.getZone()).toDate();
+        this.latestMaxDeparture = new DateTime(longSummaryStatistics.getMax(), dateTime.getZone()).toDate();
+        this.latestMinDeparture = new DateTime(longSummaryStatistics.getMin(), dateTime.getZone()).toDate();
     }
 
     public Integer getMinimumStayTime() {
@@ -109,27 +106,27 @@ public class TripsAnalysis {
         this.minimumTripTime = minimumTripTime;
     }
 
-    public DateTime getLatestMaxDeparture() {
+    public Date getLatestMaxDeparture() {
         return latestMaxDeparture;
     }
 
-    public void setLatestMaxDeparture(DateTime latestMaxDeparture) {
+    public void setLatestMaxDeparture(Date latestMaxDeparture) {
         this.latestMaxDeparture = latestMaxDeparture;
     }
 
-    public DateTime getLatestAverageDeparture() {
+    public Date getLatestAverageDeparture() {
         return latestAverageDeparture;
     }
 
-    public void setLatestAverageDeparture(DateTime latestAverageDeparture) {
+    public void setLatestAverageDeparture(Date latestAverageDeparture) {
         this.latestAverageDeparture = latestAverageDeparture;
     }
 
-    public DateTime getLatestMinDeparture() {
+    public Date getLatestMinDeparture() {
         return latestMinDeparture;
     }
 
-    public void setLatestMinDeparture(DateTime latestMinDeparture) {
+    public void setLatestMinDeparture(Date latestMinDeparture) {
         this.latestMinDeparture = latestMinDeparture;
     }
 
