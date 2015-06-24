@@ -68,11 +68,15 @@ public class DataConcernEvaluationController {
             // get the evaluator for the specific concern
             DataConcernEvaluatorBase dataConcernEvaluatorBase = factory.getEvaluator(type);
 
-            // evaluate the report using the evaluator
-            DataConcern dataConcern = dataConcernEvaluatorBase.evaluateConcern(report, reportMetadataDTO);
+            try {
+                // evaluate the report using the evaluator
+                DataConcern dataConcern = dataConcernEvaluatorBase.evaluateConcern(report, reportMetadataDTO);
 
-            // add the result
-            dataConcernDTO.getDataConcerns().add(modelMapper.map(dataConcern, DataConcernDTO.class));
+                // add the result
+                dataConcernDTO.getDataConcerns().add(modelMapper.map(dataConcern, DataConcernDTO.class));
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
         reportMetadataDTO.setDataConcerns(dataConcernDTO.getDataConcerns());
 

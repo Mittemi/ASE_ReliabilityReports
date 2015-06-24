@@ -4,6 +4,7 @@ import ase.shared.Constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * Created by Michael on 22.06.2015.
  */
-public class ReportMetadata<TDataConcern extends DataConcern> {
+public class ReportMetadata<TDataConcern extends DataConcern> implements Serializable {
 
     public ReportMetadata() {
         dataConcerns = new LinkedList<>();

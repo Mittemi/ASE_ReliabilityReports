@@ -61,7 +61,7 @@ public class AnalysisService {
             }
         }
 
-        System.out.println("Analysis finished...");
+        System.out.println("Analysis request queued...");
         return analysisResponseDTO;
     }
 
