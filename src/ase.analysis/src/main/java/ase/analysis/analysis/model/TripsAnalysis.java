@@ -1,11 +1,9 @@
 package ase.analysis.analysis.model;
 
 
-import ase.shared.model.analysis.DayAnalysisResult;
 import ase.shared.model.analysis.TripAnalysisResult;
 import ase.shared.model.analysis.TripsAnalysisResult;
 import org.joda.time.DateTime;
-import org.joda.time.Seconds;
 import org.joda.time.base.AbstractDateTime;
 
 import java.util.IntSummaryStatistics;

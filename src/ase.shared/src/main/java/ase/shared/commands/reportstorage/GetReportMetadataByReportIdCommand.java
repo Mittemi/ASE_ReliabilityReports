@@ -1,6 +1,6 @@
 package ase.shared.commands.reportstorage;
 
-import ase.shared.commands.GenericHATEOSGetCommand;
+import ase.shared.commands.GenericHATEOSFindCommand;
 import ase.shared.commands.resttypes.ReportMetadataDTORestWrapper;
 import ase.shared.dto.ReportMetadataDTO;
 import com.google.common.collect.ImmutableMap;
@@ -9,12 +9,12 @@ import org.springframework.hateoas.client.Traverson;
 /**
  * Created by Michael on 23.06.2015.
  */
-public class GetReportMetadataByReportIdCommand extends GenericHATEOSGetCommand<ReportMetadataDTORestWrapper, ReportMetadataDTO> {
+public class GetReportMetadataByReportIdCommand extends GenericHATEOSFindCommand<ReportMetadataDTORestWrapper, ReportMetadataDTO> {
 
     private String reportId;
 
     public GetReportMetadataByReportIdCommand(String url, String reportId) {
-        super(ReportMetadataDTORestWrapper.class, url);
+        super(ReportMetadataDTORestWrapper.class, ReportMetadataDTO.class, url);
         this.reportId = reportId;
     }
 

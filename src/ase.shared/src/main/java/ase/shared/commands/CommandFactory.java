@@ -82,8 +82,8 @@ public class CommandFactory {
         return autowire(new CreateReportMetadataCommand(REPORT_STORAGE_URL, report));
     }
 
-    public UpdateReportMetadataCommand updateReportMetadataCommand(ReportMetadataDTO report) {
-        return autowire(new UpdateReportMetadataCommand(REPORT_STORAGE_URL, report));
+    public UpdateReportMetadataCommand updateReportMetadataCommand(ReportMetadataDTO report, String id) {
+        return autowire(new UpdateReportMetadataCommand(REPORT_STORAGE_URL, id, report));
     }
 
     //////////////////

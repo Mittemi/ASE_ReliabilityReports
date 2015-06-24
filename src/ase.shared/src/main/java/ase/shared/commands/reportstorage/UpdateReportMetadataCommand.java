@@ -13,14 +13,16 @@ import java.net.URI;
 public class UpdateReportMetadataCommand extends GenericRESTUpdateCommand<ReportMetadataDTO> {
     private ReportMetadataDTO body;
     private String url;
+    private String id;
 
-    public UpdateReportMetadataCommand(String url, ReportMetadataDTO body) {
+    public UpdateReportMetadataCommand(String url, String id, ReportMetadataDTO body) {
+        this.id = id;
         this.body = body;
         this.url = url;
     }
 
     @Override
     protected RequestEntity<ReportMetadataDTO> getRequest() {
-        return new RequestEntity<>(body, HttpMethod.PUT, URI.create(url + "/storedReportMetadatas/" + body.getId()));
+        return new RequestEntity<>(body, HttpMethod.PUT, URI.create(url + "/storedReportMetadatas/" + id));
     }
 }

@@ -1,8 +1,6 @@
 package ase.shared.model.analysis;
 
 import ase.shared.model.simulation.RealtimeData;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
 
 import java.util.Date;
 import java.util.List;

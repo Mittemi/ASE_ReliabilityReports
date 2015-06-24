@@ -1,7 +1,6 @@
 package ase.apiGateway.controller;
 
 import ase.shared.commands.CommandFactory;
-import ase.shared.dto.NotificationDTO;
 import ase.shared.model.notification.Notification;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,7 +4,6 @@ import ase.shared.commands.CommandFactory;
 import ase.shared.dto.DataConcernDTO;
 import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
-import ase.shared.model.analysis.Report;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

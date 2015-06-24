@@ -1,9 +1,7 @@
 package ase.shared.model.analysis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.util.StreamUtils;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;

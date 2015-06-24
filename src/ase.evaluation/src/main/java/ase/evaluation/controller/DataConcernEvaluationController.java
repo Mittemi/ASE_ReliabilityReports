@@ -11,10 +11,13 @@ import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.enums.DataConcernType;
 import ase.shared.model.DataConcern;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Created by Michael on 20.06.2015.
@@ -38,7 +41,18 @@ public class DataConcernEvaluationController {
         dataConcernDTO.setReportId(reportId);
 
         ReportDTO report = commandFactory.getReportByIdCommand(reportId).getSingleResult();
-        ReportMetadataDTO reportMetadataDTO = commandFactory.getReportMetadataByReportIdCommand(reportId).getSingleResult();
+
+        if(report == null) {
+            return null;
+        }
+
+        List<Pair<String, ReportMetadataDTO>> reportMetadataResults = commandFactory.getReportMetadataByReportIdCommand(reportId).execute();
+
+        if(reportMetadataResults.size() == 0) {
+            return null;
+        }
+
+        ReportMetadataDTO reportMetadataDTO = reportMetadataResults.get(0).getValue();
 
         // if already calculated, return them
         if(reportMetadataDTO.getDataConcerns() != null && reportMetadataDTO.getDataConcerns().size() > 0) {
@@ -60,7 +74,7 @@ public class DataConcernEvaluationController {
         }
         reportMetadataDTO.setDataConcerns(dataConcernDTO.getDataConcerns());
 
-        UpdateResult result = commandFactory.updateReportMetadataCommand(reportMetadataDTO).getResult();
+        UpdateResult updateResult = commandFactory.updateReportMetadataCommand(reportMetadataDTO, reportMetadataResults.get(0).getKey()).getResult();
 
         return dataConcernDTO;
     }

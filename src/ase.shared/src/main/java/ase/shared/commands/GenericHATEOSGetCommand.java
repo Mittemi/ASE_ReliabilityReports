@@ -14,7 +14,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 /**
  * Created by Michael on 20.06.2015.
  */
-public abstract class GenericHATEOSGetCommand<TResult extends Resources<TModel>, TModel> implements IRestCommand<TModel> {
+public abstract class GenericHATEOSGetCommand<TResult extends Resources<TModel>, TModel> {
 
     private Traverson traverson;
     private Traverson.TraversalBuilder traversalBuilder;
@@ -28,7 +28,6 @@ public abstract class GenericHATEOSGetCommand<TResult extends Resources<TModel>,
 
     protected abstract Traverson.TraversalBuilder initBuilder(Traverson traverson);
 
-    @Override
     public Collection<TModel> execute() {
         traversalBuilder = initBuilder(traverson);
         return traversalBuilder.toObject(clazzResult).getContent();
