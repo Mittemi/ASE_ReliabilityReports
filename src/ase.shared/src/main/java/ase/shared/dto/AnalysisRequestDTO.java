@@ -32,8 +32,8 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
     @JsonFormat(pattern = Constants.DATE_FORMAT)
     private Date from;
 
-    @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
-    @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
+    @JsonFormat(pattern = Constants.DATE_FORMAT)
     private Date to;
 
     @JsonIgnore

@@ -1,5 +1,6 @@
 package ase.apiGateway.controller;
 
+import ase.shared.ASEModelMapper;
 import ase.shared.commands.CommandFactory;
 import ase.shared.dto.*;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -20,14 +21,23 @@ public class ReportController {
     @Autowired
     private CommandFactory commandFactory;
 
+    @Autowired
+    private ASEModelMapper modelMapper;
+
     @RequestMapping(value = "/view/{reportId}")
     @HystrixCommand(fallbackMethod = "getReportFallback")
-    public ReportDTO getReport(@PathVariable String reportId) {
-        return commandFactory.getReportByIdCommand(reportId).getSingleResult();
+    public PublicReportDTO getReport(@PathVariable String reportId) {
+        ReportDTO reportDTO = commandFactory.getReportByIdCommand(reportId).getSingleResult();
+
+        if(reportDTO == null)   {
+            return null;
+        }
+
+        return modelMapper.map(reportDTO, PublicReportDTO.class);
     }
 
     /* Hystrix fallback */
-    public ReportDTO getReportFallback(String reportId) {
+    public PublicReportDTO getReportFallback(String reportId) {
         return null;
     }
 

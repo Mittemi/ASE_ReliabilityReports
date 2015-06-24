@@ -1,6 +1,7 @@
 package ase.apiGateway.controller;
 
 import ase.shared.commands.CommandFactory;
+import ase.shared.dto.ReportDTO;
 import ase.shared.dto.ReportMetadataDTO;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,12 @@ public class InternalsController {
     /* Hystrix fallback */
     public ReportMetadataDTO getReportMetadataFallback(String reportId) {
         return null;
+    }
+
+    @RequestMapping(value = "/view/{reportId}")
+    @HystrixCommand(fallbackMethod = "getReportMetadataFallback")
+    public ReportDTO getReport(@PathVariable String reportId) {
+        return commandFactory.getReportByIdCommand(reportId).getSingleResult();
     }
 
 //    @RequestMapping(value = "/reports")
