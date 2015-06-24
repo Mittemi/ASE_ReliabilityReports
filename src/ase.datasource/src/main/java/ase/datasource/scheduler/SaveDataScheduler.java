@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Michael on 21.06.2015.
@@ -33,13 +34,16 @@ public class SaveDataScheduler {
 
 
         System.out.println("Generating data");
-        DateTime endSimulation = new DateTime(2015,6,30,23,59,00);
+        DateTime endSimulation = new DateTime(2015,6,30,23,59,0);
+
+        List<String> lines = dataSimulation.getLines().stream().map(x->x.getName()).collect(Collectors.toList());
 
         while(endSimulation.isAfter(dataSimulation.getCurrentTime())) {
 
-            List<StoredRealtimeData> realtimeData = dataSimulation.move("U1");
-
-            realtimeDataRespository.save(realtimeData);
+            for(String line : lines) {
+                List<StoredRealtimeData> realtimeData = dataSimulation.move(line);
+                realtimeDataRespository.save(realtimeData);
+            }
         }
         System.out.println("Data generated");
     }
