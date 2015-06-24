@@ -141,7 +141,83 @@ public class DataSimulation {
         timeToTravel = new ConcurrentHashMap<>();
 
         initU1();
+        initU2();
+        initU3();
         checkConstraints();
+    }
+
+    private void initU3() {
+        Line u3 = createLine("U3", 3);
+
+        Station ottakring = createStation(u3, "Ottakring", 25, 1);
+        Station schweglerstraße = createStation(u3, "Schweglerstraße", 26, 2);
+        Station westbahnhof = createStation(u3, "Westbahnhof", 27, 3);
+        Station zieglergasse = createStation(u3, "Zieglergasse", 28, 4);
+        Station neubaugasse = createStation(u3, "Neubaugasse", 29, 5);
+        Station volkstheater = createStation(u3, "Volkstheater", 30, 6);
+        Station herrengasse = createStation(u3, "Herrengasse", 31, 7);
+        Station stubentor = createStation(u3, "Stubentor", 32, 8);
+        Station landstraße = createStation(u3, "Landstraße", 33, 9);
+        Station rochusgasse = createStation(u3, "Rochusgasse", 34, 10);
+        Station kardinal = createStation(u3, "Kardinal-Nagl-Platz", 35, 11);
+        Station simmering = createStation(u3, "Simmering", 36, 12);
+
+        initHelperData(u3);
+
+        // Leopoldau -> Raeumannplatz
+        createTrain(u3, 1, simmering, ottakring, 0);
+        createTrain(u3, 2, rochusgasse, ottakring, 0);
+        createTrain(u3, 3, stubentor, ottakring, 0);
+        createTrain(u3, 4, volkstheater, ottakring, 0);
+        createTrain(u3, 5, zieglergasse, ottakring, 0);
+        createTrain(u3, 6, schweglerstraße, ottakring, 0);
+
+        // Raeumannplatz -> Leopoldau
+        createTrain(u3, 7, ottakring, simmering, 0);
+        createTrain(u3, 8, westbahnhof, simmering, 0);
+        createTrain(u3, 9, neubaugasse, simmering, 0);
+        createTrain(u3, 10, herrengasse, simmering, 0);
+        createTrain(u3, 11, landstraße, simmering, 0);
+        createTrain(u3, 12, kardinal, simmering, 0);
+
+        updateArrivalTimes(u3);
+    }
+
+    private void initU2() {
+        Line u2 = createLine("U2", 4);
+
+        Station karlsplatz = createStation(u2, "Karlsplatz", 13, 1);
+        Station museumsquartier = createStation(u2, "Museumsquartier", 14, 2);
+        Station volkstheater = createStation(u2, "Volkstheater", 15, 3);
+        Station rathaus = createStation(u2, "Rathaus", 16, 4);
+        Station schottentor = createStation(u2, "Schottentor - Universität", 17, 5);
+        Station schottenring = createStation(u2, "Schottenring", 18, 6);
+        Station taborstraße = createStation(u2, "Taborstraße", 19, 7);
+        Station praterstern = createStation(u2, "Praterstern", 20, 8);
+        Station messe = createStation(u2, "Messe", 21, 9);
+        Station krieau = createStation(u2, "Krieau", 22, 10);
+        Station stadion = createStation(u2, "Stadion", 23, 11);
+        Station aspernstraße = createStation(u2, "Aspernstraße", 24, 12);
+
+        initHelperData(u2);
+
+        // Leopoldau -> Raeumannplatz
+        createTrain(u2, 1, aspernstraße, karlsplatz, 0);
+        createTrain(u2, 2, krieau, karlsplatz, 0);
+        createTrain(u2, 3, praterstern, karlsplatz, 0);
+        createTrain(u2, 4, schottenring, karlsplatz, 0);
+        createTrain(u2, 5, rathaus, karlsplatz, 0);
+        createTrain(u2, 6, museumsquartier, karlsplatz, 0);
+
+        // Raeumannplatz -> Leopoldau
+        createTrain(u2, 7, karlsplatz, aspernstraße, 0);
+        createTrain(u2, 8, volkstheater, aspernstraße, 0);
+        createTrain(u2, 9, schottentor, aspernstraße, 0);
+        createTrain(u2, 10, taborstraße, aspernstraße, 0);
+        createTrain(u2, 11, messe, aspernstraße, 0);
+        createTrain(u2, 12, stadion, aspernstraße, 0);
+
+        updateArrivalTimes(u2);
     }
 
     private void checkConstraints() {
@@ -228,7 +304,8 @@ public class DataSimulation {
         }
         //end wait
 
-        int timeToTravelPerStation = getTimeToTravelPerStation(stationToLine.get(currentStation));
+        //4/3 because we generate data in the interval 30-60 seconds which should result in average of 45 seconds
+        int timeToTravelPerStation = getTimeToTravelPerStation(stationToLine.get(currentStation)) * 4/3;
         int minTime = timeToTravelPerStation/2;
         int travelTime = random.nextInt(timeToTravelPerStation - minTime) + minTime;
 
@@ -343,7 +420,10 @@ public class DataSimulation {
 
     public List<StoredRealtimeData> move(String lineName) {
 
-        currentTime = currentTime.plusMinutes(1);
+        int seconds = random.nextInt(30) + 30;
+
+        //currentTime = currentTime.plusMinutes(1);
+        currentTime = currentTime.plusSeconds(seconds);
 
         Line line = lines.get(lineName);
         ConcurrentHashMap<Integer, Train> trains = this.trainsPerLine.get(line);
@@ -547,7 +627,7 @@ public class DataSimulation {
 
 
     private void initU1() {
-        Line u1 = createLine("U1", 4);
+        Line u1 = createLine("U1", 3);
 
         Station reumannplatz = createStation(u1, "Reumannplatz", 1, 1);
         Station keplerplatz = createStation(u1, "Keplerplatz", 2, 2);
@@ -608,7 +688,7 @@ public class DataSimulation {
                     Integer waitTime = waitingTime.get(nearestTrain);
 
                     if(waitTime > 0) {
-                        countStationsTillTargetStation = countStationsTillTargetStation - 1;
+                  //      countStationsTillTargetStation = countStationsTillTargetStation - 1;
                     }
 
                     estimatedArrival = estimatedArrival.plusMinutes(countStationsTillTargetStation * getTimeToTravelPerStation(line) + waitTime);

@@ -33,7 +33,7 @@ public class SaveDataScheduler {
 
 
         System.out.println("Generating data");
-        DateTime endSimulation = new DateTime(2015,6,1,23,59,00);
+        DateTime endSimulation = new DateTime(2015,6,30,23,59,00);
 
         while(endSimulation.isAfter(dataSimulation.getCurrentTime())) {
 
