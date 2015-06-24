@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class DayAnalysisResult<TModel extends TripAnalysisResult> {
 
-    @JsonIgnore
     private List<TModel> tripAnalysisResultList;
 
     public DayAnalysisResult() {

@@ -19,6 +19,46 @@ public class ReportTimeSpan {
 
     private Date toDate;
 
+    private int hourFrom;
+
+    private int hourTo;
+
+    private int minuteFrom;
+
+    private int minuteTo;
+
+    public int getHourFrom() {
+        return hourFrom;
+    }
+
+    public void setHourFrom(int hourFrom) {
+        this.hourFrom = hourFrom;
+    }
+
+    public int getHourTo() {
+        return hourTo;
+    }
+
+    public void setHourTo(int hourTo) {
+        this.hourTo = hourTo;
+    }
+
+    public int getMinuteFrom() {
+        return minuteFrom;
+    }
+
+    public void setMinuteFrom(int minuteFrom) {
+        this.minuteFrom = minuteFrom;
+    }
+
+    public int getMinuteTo() {
+        return minuteTo;
+    }
+
+    public void setMinuteTo(int minuteTo) {
+        this.minuteTo = minuteTo;
+    }
+
     public Date getFromDate() {
         return fromDate;
     }

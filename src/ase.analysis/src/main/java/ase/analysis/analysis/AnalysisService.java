@@ -159,7 +159,14 @@ public class AnalysisService {
     private Report createReport(AnalysisRequestDTO analysisRequestDTO, List<Station> stations, TripsAnalysis tripsAnalysis) {
         Report report = new Report();
         report.setLines(Arrays.asList(new Line(analysisRequestDTO.getLine())));
-        report.setTime(new ReportTimeSpan(analysisRequestDTO.getFrom(), analysisRequestDTO.getTo()));
+
+        ReportTimeSpan reportTimeSpan = new ReportTimeSpan(analysisRequestDTO.getFrom(), analysisRequestDTO.getTo());
+        reportTimeSpan.setHourFrom(analysisRequestDTO.getHourStart());
+        reportTimeSpan.setHourTo(analysisRequestDTO.getHourEnd());
+        reportTimeSpan.setMinuteFrom(analysisRequestDTO.getMinuteEnd());
+        reportTimeSpan.setMinuteTo(analysisRequestDTO.getMinuteEnd());
+
+        report.setTime(reportTimeSpan);
         report.setStations(stations);
 
         report.setTripsAnalysisResult(tripsAnalysis);
@@ -218,7 +225,7 @@ public class AnalysisService {
             Map<Integer, List<RealtimeData>> entryArrivingTripRT = startingTripsRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
             Map<Integer, List<RealtimeData>> exitArrivingTripRT = arrivingTripsRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
 
-            tripAnalysisList.addAll(joinRT(entryArrivingTripRT, exitArrivingTripRT));
+            tripAnalysisList.addAll(joinRT(entryArrivingTripRT, exitArrivingTripRT, trainNumber));
         }
         return tripAnalysisList;
     }
@@ -229,12 +236,12 @@ public class AnalysisService {
      * @param entryArrivingTripRT
      * @param exitArrivingTripRT
      */
-    private List<TripAnalysis> joinRT(Map<Integer, List<RealtimeData>> entryArrivingTripRT, Map<Integer, List<RealtimeData>> exitArrivingTripRT) {
+    private List<TripAnalysis> joinRT(Map<Integer, List<RealtimeData>> entryArrivingTripRT, Map<Integer, List<RealtimeData>> exitArrivingTripRT, int trainNumber) {
         List<TripAnalysis> result = new LinkedList<>();
 
         for (Integer tripNumber : entryArrivingTripRT.keySet()) {
 
-            TripAnalysis tripAnalysisResult = new TripAnalysis(tripNumber);
+            TripAnalysis tripAnalysisResult = new TripAnalysis(tripNumber, trainNumber);
             result.add(tripAnalysisResult);
 
             List<RealtimeData> entryRT = entryArrivingTripRT.get(tripNumber);

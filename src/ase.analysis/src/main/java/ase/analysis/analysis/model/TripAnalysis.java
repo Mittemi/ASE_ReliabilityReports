@@ -8,8 +8,8 @@ import org.joda.time.Seconds;
  * Created by Michael on 23.06.2015.
  */
 public class TripAnalysis extends TripAnalysisResult {
-    public TripAnalysis(Integer tripNumber) {
-        super(tripNumber);
+    public TripAnalysis(Integer tripNumber, Integer trainNumber) {
+        super(tripNumber, trainNumber);
     }
 
 

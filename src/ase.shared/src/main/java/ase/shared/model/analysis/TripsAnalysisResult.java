@@ -11,10 +11,8 @@ import java.util.stream.Collectors;
  */
 public class TripsAnalysisResult<TModel extends DayAnalysisResult<TInnerModel>, TInnerModel extends TripAnalysisResult> {
 
-    @JsonIgnore
     private List<TModel> dayAnalysisResults;
 
-    @JsonIgnore
     public List<TModel> getDayAnalysisResults() {
         return dayAnalysisResults;
     }

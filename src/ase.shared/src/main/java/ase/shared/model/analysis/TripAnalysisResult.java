@@ -1,6 +1,7 @@
 package ase.shared.model.analysis;
 
 import ase.shared.model.simulation.RealtimeData;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
 import java.util.List;
@@ -12,13 +13,17 @@ public class TripAnalysisResult {
 
     private Integer tripNumber;
 
+    private Integer trainNumber;
+
     private Date entryArrival;
     private Date entryDeparture;
 
     private Date exitArrival;
 
+    @JsonIgnore
     private List<RealtimeData> entryRT;
 
+    @JsonIgnore
     private List<RealtimeData> exitRT;
     private int tripDuration;
     private int entryStayTime;
@@ -28,8 +33,9 @@ public class TripAnalysisResult {
 
     private Date latestDeparture;
 
-    public TripAnalysisResult(Integer tripNumber) {
+    public TripAnalysisResult(Integer tripNumber, Integer trainNumber) {
         this.tripNumber = tripNumber;
+        this.trainNumber = trainNumber;
     }
 
     public TripAnalysisResult() {
@@ -131,5 +137,13 @@ public class TripAnalysisResult {
 
     public void setLatestDeparture(Date latestDeparture) {
         this.latestDeparture = latestDeparture;
+    }
+
+    public Integer getTrainNumber() {
+        return trainNumber;
+    }
+
+    public void setTrainNumber(Integer trainNumber) {
+        this.trainNumber = trainNumber;
     }
 }

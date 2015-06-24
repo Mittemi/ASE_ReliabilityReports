@@ -1,10 +1,12 @@
 package ase.shared.commands;
 
+import ase.shared.commands.analysis.RequestReportCommand;
 import ase.shared.commands.datasource.*;
 import ase.shared.commands.evaluation.GetDataConcernsCommand;
 import ase.shared.commands.notification.CreateNotificationCommand;
 import ase.shared.commands.notification.GetNotificationsByEmailCommand;
 import ase.shared.commands.reportstorage.*;
+import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
 import ase.shared.model.analysis.Report;
@@ -133,5 +135,13 @@ public class CommandFactory {
 
     public GetDataConcernsCommand getDataConcernsCommand(String reportId) {
         return autowire(new GetDataConcernsCommand(EVALUATION_URL, reportId));
+    }
+
+    ////////////////
+    //  ANALYSIS  //
+    ////////////////
+
+    public RequestReportCommand requestReportCommand(AnalysisRequestDTO analysisRequestDTO, String priority) {
+        return autowire(new RequestReportCommand(ANALYSIS_URL, analysisRequestDTO, priority));
     }
 }

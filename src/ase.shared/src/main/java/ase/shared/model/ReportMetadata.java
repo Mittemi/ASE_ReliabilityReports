@@ -1,5 +1,9 @@
 package ase.shared.model;
 
+import ase.shared.Constants;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +23,12 @@ public class ReportMetadata<TDataConcern extends DataConcern> {
 
     private Integer priority;
 
+    @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
+    @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
     private Date requestedAt;
 
+    @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
+    @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
     private Date createdAt;
 
     private List<TDataConcern> dataConcerns;
