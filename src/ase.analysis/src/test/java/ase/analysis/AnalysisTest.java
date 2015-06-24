@@ -32,15 +32,19 @@ public class AnalysisTest {
 
     @Test
     public void testAnalysisU1(){
-
         AnalysisRequestDTO analysisRequestDTO = new AnalysisRequestDTO();
-        analysisRequestDTO.setFrom(new DateTime(2015, 6, 1, 8, 0).toDate());
-        analysisRequestDTO.setTo(new DateTime(2015, 6, 1, 10, 50).toDate());
+        // we use 5 days for the analysis
+        analysisRequestDTO.setFrom(new DateTime(2015, 6, 1 ,0, 0).toDate());
+        analysisRequestDTO.setTo(new DateTime(2015, 6, 2, 0, 0).toDate());
         analysisRequestDTO.setLine("U1");
         analysisRequestDTO.setStationFrom("Karlsplatz");
         analysisRequestDTO.setStationTo("Donauinsel");
         analysisRequestDTO.setUserId("Unit-Test");
 
+        // we are interested in the time frame between 8 and 10
+        // 24 hours system!!
+        analysisRequestDTO.setHourStart(8);
+        analysisRequestDTO.setHourEnd(12);
         ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
         reportMetadata.setRequestedAt(new Date());
         reportMetadata.setUserId(analysisRequestDTO.getUserId());
@@ -50,32 +54,4 @@ public class AnalysisTest {
         analysisService.jmsAnalyseTarget(analysisRequestDTO);
     }
 
-    @Autowired
-    JmsTemplate jmsTemplate;
-
-    @Test
-    public void testJms() {
-        AnalysisRequestDTO analysisRequestDTO = new AnalysisRequestDTO();
-        analysisRequestDTO.setFrom(new DateTime(2015, 6, 1, 8, 0).toDate());
-        analysisRequestDTO.setTo(new DateTime(2015, 6, 1, 10, 50).toDate());
-        analysisRequestDTO.setLine("U1");
-        analysisRequestDTO.setStationFrom("Karlsplatz");
-        analysisRequestDTO.setStationTo("Donauinsel");
-        analysisRequestDTO.setUserId("Unit-Test");
-
-        ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
-        reportMetadata.setRequestedAt(new Date());
-        reportMetadata.setUserId(analysisRequestDTO.getUserId());
-        reportMetadata.setPriority(MessagePriority.Medium.getValue());
-        analysisRequestDTO.setReportMetadata(reportMetadata);
-
-        controller.requestAnalysis(analysisRequestDTO, MessagePriority.Low.name());
-        controller.requestAnalysis(analysisRequestDTO, MessagePriority.Low.name());
-        analysisRequestDTO.setStationTo("Leopoldau");
-        controller.requestAnalysis(analysisRequestDTO, MessagePriority.Low.name());
-        analysisRequestDTO.setStationTo("Schwedenplatz");
-        controller.requestAnalysis(analysisRequestDTO, MessagePriority.Low.name());
-        analysisRequestDTO.setUserId("High");
-        controller.requestAnalysis(analysisRequestDTO, MessagePriority.High.name());
-    }
 }

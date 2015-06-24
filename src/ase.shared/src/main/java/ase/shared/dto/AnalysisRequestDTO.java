@@ -21,6 +21,13 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
 
     private String stationTo;
 
+    private int hourStart;
+    private int minuteStart;
+
+    private int hourEnd;
+    private int minuteEnd;
+
+
     @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
     @JsonFormat(pattern = Constants.DATE_TIME_FORMAT)
     private Date from;
@@ -89,5 +96,37 @@ public class AnalysisRequestDTO implements Serializable {       //used as jms me
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public int getHourStart() {
+        return hourStart;
+    }
+
+    public void setHourStart(int hourStart) {
+        this.hourStart = hourStart;
+    }
+
+    public int getMinuteStart() {
+        return minuteStart;
+    }
+
+    public void setMinuteStart(int minuteStart) {
+        this.minuteStart = minuteStart;
+    }
+
+    public int getHourEnd() {
+        return hourEnd;
+    }
+
+    public void setHourEnd(int hourEnd) {
+        this.hourEnd = hourEnd;
+    }
+
+    public int getMinuteEnd() {
+        return minuteEnd;
+    }
+
+    public void setMinuteEnd(int minuteEnd) {
+        this.minuteEnd = minuteEnd;
     }
 }

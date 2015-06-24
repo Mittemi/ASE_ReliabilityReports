@@ -17,6 +17,8 @@ import ase.shared.model.notification.Notification;
 import ase.shared.model.simulation.Line;
 import ase.shared.model.simulation.RealtimeData;
 import ase.shared.model.simulation.Station;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.annotation.JmsListener;
@@ -88,8 +90,7 @@ public class AnalysisService {
         Station direction = entryStation.getPosition() < exitStation.getPosition() ? directionHigh : directionLow;
 
         // perform actual analysis
-        TripsAnalysis tripsAnalysis = analyzeRT(entryStation, exitStation, analysisRequestDTO.getLine(), direction.getName(), analysisRequestDTO.getFrom(), analysisRequestDTO.getTo());
-        tripsAnalysis.analyze();
+        TripsAnalysis tripsAnalysis = analyse(analysisRequestDTO, entryStation, exitStation, direction);
 
         // create report
         Report report = createReport(analysisRequestDTO, stations, tripsAnalysis);
@@ -119,6 +120,30 @@ public class AnalysisService {
         System.out.println("Processing finished for user " + analysisRequestDTO.getUserId());
     }
 
+    private TripsAnalysis analyse(AnalysisRequestDTO analysisRequestDTO, Station entryStation, Station exitStation, Station direction) {
+        List<TripAnalysis> tripAnalysisList = new LinkedList<>();
+
+        // prepare date
+        DateTime currentDayStart = new DateTime(analysisRequestDTO.getFrom());
+        currentDayStart = new DateTime(currentDayStart.getYear(),currentDayStart.getMonthOfYear(),currentDayStart.getDayOfMonth(), analysisRequestDTO.getHourStart(), analysisRequestDTO.getMinuteStart());
+        DateTime currentDayEnd = new DateTime(currentDayStart.getYear(),currentDayStart.getMonthOfYear(), currentDayStart.getDayOfMonth(), analysisRequestDTO.getHourEnd(), analysisRequestDTO.getMinuteEnd());
+
+        int days = Days.daysBetween(new DateTime(analysisRequestDTO.getFrom()), new DateTime(analysisRequestDTO.getTo())).getDays();
+
+        for (int currentDay = 0; currentDay < days; currentDay++) {
+            tripAnalysisList.addAll(analyzeDayRT(entryStation, exitStation, analysisRequestDTO.getLine(), direction.getName(), currentDayStart.toDate(), currentDayEnd.toDate()));
+
+            currentDayStart = currentDayStart.plusDays(1);
+            currentDayEnd = currentDayEnd.plusDays(1);
+        }
+
+        // perform actual analysis
+        TripsAnalysis tripsAnalysis = new TripsAnalysis();
+        tripsAnalysis.setTripAnalysisResults(tripAnalysisList);
+        tripsAnalysis.analyze();
+        return tripsAnalysis;
+    }
+
     /**
      * creates the actual report from the analysis results
      * @param analysisRequestDTO
@@ -146,7 +171,7 @@ public class AnalysisService {
      * @param to
      * @return
      */
-    private TripsAnalysis analyzeRT(Station entryStation, Station exitStation, String line, String direction, Date from, Date to) {
+    private List<TripAnalysis> analyzeDayRT(Station entryStation, Station exitStation, String line, String direction, Date from, Date to) {
 
         //call webservice for RT data
         List<RealtimeData> entryStationRT = commandFactory.getRealtimeDataByStationAndTWCommand(line, direction, entryStation.getNumber(), from, to).toList();
@@ -163,7 +188,8 @@ public class AnalysisService {
         Map<Integer, List<RealtimeData>> exitTrainsByTrainNumber = exitStationRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getNumber()));
 
 
-        TripsAnalysis tripsAnalysis = new TripsAnalysis();
+        //TripsAnalysis tripsAnalysis = new TripsAnalysis();
+        List<TripAnalysis> tripAnalysisList = new LinkedList<>();
 
         for(Integer trainNumber : entryTrainsByTrainNumber.keySet()) {
 
@@ -187,9 +213,9 @@ public class AnalysisService {
             Map<Integer, List<RealtimeData>> entryArrivingTripRT = startingTripsRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
             Map<Integer, List<RealtimeData>> exitArrivingTripRT = arrivingTripsRT.stream().collect(Collectors.groupingBy(x -> x.getTrain().getTripNumber()));
 
-            joinRT(entryArrivingTripRT, exitArrivingTripRT).forEach(tripsAnalysis::addTrip);
+            tripAnalysisList.addAll(joinRT(entryArrivingTripRT, exitArrivingTripRT));
         }
-        return tripsAnalysis;
+        return tripAnalysisList;
     }
 
     /**
