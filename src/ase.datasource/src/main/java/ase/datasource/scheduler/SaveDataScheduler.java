@@ -40,7 +40,10 @@ public class SaveDataScheduler {
 
         while(endSimulation.isAfter(dataSimulation.getCurrentTime())) {
 
+            dataSimulation.incrementTime();
+
             for(String line : lines) {
+
                 List<StoredRealtimeData> realtimeData = dataSimulation.move(line);
                 realtimeDataRespository.save(realtimeData);
             }
