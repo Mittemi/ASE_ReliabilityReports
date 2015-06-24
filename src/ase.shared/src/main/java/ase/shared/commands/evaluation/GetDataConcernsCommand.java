@@ -2,6 +2,7 @@ package ase.shared.commands.evaluation;
 
 import ase.shared.commands.GenericRESTCommand;
 import ase.shared.dto.DataConcernDTO;
+import ase.shared.dto.DataConcernListDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -11,12 +12,12 @@ import java.net.URI;
 /**
  * Created by Michael on 23.06.2015.
  */
-public class GetDataConcernsCommand extends GenericRESTCommand<Object, DataConcernDTO> {
+public class GetDataConcernsCommand extends GenericRESTCommand<Object, DataConcernListDTO> {
     private String reportId;
     private String url;
 
     public GetDataConcernsCommand(String url, String reportId) {
-        super(new ParameterizedTypeReference<DataConcernDTO>() {
+        super(new ParameterizedTypeReference<DataConcernListDTO>() {
         });
         this.reportId = reportId;
         this.url = url;

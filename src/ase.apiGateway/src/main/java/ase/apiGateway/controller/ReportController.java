@@ -4,7 +4,11 @@ import ase.shared.commands.CommandFactory;
 import ase.shared.dto.*;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by Michael on 23.06.2015.
@@ -29,18 +33,33 @@ public class ReportController {
 
     @RequestMapping(value = "/metadata/{reportId}")
     @HystrixCommand(fallbackMethod = "getReportMetadataFallback")
-    public DataConcernDTO getReportMetadata(@PathVariable String reportId) {
+    public DataConcernListDTO getReportMetadata(@PathVariable String reportId) {
         return commandFactory.getDataConcernsCommand(reportId).getResult();
     }
 
     /* Hystrix fallback */
-    public ReportMetadataDTO getReportMetadataFallback(String reportId) {
+    public DataConcernListDTO getReportMetadataFallback(String reportId) {
         return null;
+    }
+
+    @RequestMapping(value = "/test/{priority}/", method = RequestMethod.POST)
+    @HystrixCommand(fallbackMethod = "requestReportFallback")
+    public AnalysisRequestDTO roundTrip(@RequestBody AnalysisRequestDTO analysisRequestDTO, @PathVariable String priority) {
+
+        return analysisRequestDTO;
     }
 
     @RequestMapping(value = "/request/{priority}/", method = RequestMethod.POST)
     @HystrixCommand(fallbackMethod = "requestReportFallback")
     public AnalysisResponseDTO requestReport(@RequestBody AnalysisRequestDTO analysisRequestDTO, @PathVariable String priority) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AnalysisRequestDTO> analysisRequestDTOHttpEntity = new HttpEntity<>(analysisRequestDTO, headers);
+     //   return restTemplate.postForObject("http://localhost:9090/analysis/request/Low/", analysisRequestDTOHttpEntity, AnalysisResponseDTO.class);
 
         return commandFactory.requestReportCommand(analysisRequestDTO, priority).getResult();
     }

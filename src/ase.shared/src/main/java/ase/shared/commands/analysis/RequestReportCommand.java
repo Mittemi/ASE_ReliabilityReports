@@ -4,7 +4,9 @@ import ase.shared.commands.GenericRESTCommand;
 import ase.shared.dto.AnalysisRequestDTO;
 import ase.shared.dto.AnalysisResponseDTO;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 
 import java.net.URI;
@@ -28,6 +30,8 @@ public class RequestReportCommand extends GenericRESTCommand<AnalysisRequestDTO,
 
     @Override
     protected RequestEntity<AnalysisRequestDTO> getRequest() {
-        return new RequestEntity<AnalysisRequestDTO>(body, HttpMethod.POST, URI.create(url + "/request/" + priority));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new RequestEntity<AnalysisRequestDTO>(body, headers, HttpMethod.POST, URI.create(url + "/analysis/request/" + priority + "/"));
     }
 }
