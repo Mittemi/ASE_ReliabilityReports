@@ -10,3 +10,4 @@ src/ase.shared/gradlew.bat
 src/ase.notify/target/
 src/ase.apiGateway/target/
 src/ase.evaluation/target/
+src/ase.datasource/target/
