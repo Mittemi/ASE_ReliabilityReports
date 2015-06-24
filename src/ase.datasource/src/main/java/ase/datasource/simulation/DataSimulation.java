@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class DataSimulation {
 
-    private final boolean ENABLE_DEBUG = true;
+    private final boolean ENABLE_DEBUG = false;
 
     // begin static data
 

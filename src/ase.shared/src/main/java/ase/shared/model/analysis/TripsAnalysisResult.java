@@ -1,69 +1,98 @@
 package ase.shared.model.analysis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.util.StreamUtils;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Michael on 23.06.2015.
  */
-public class TripsAnalysisResult<TModel extends  TripAnalysisResult> {
-
-    public TripsAnalysisResult() {
-        tripAnalysisResults = new LinkedList<>();
-    }
+public class TripsAnalysisResult<TModel extends DayAnalysisResult<TInnerModel>, TInnerModel extends TripAnalysisResult> {
 
     @JsonIgnore
-    private List<TModel> tripAnalysisResults;
+    private List<TModel> dayAnalysisResults;
 
-    public void addTrip(TModel tripAnalysisResult) {
-        tripAnalysisResults.add(tripAnalysisResult);
+    @JsonIgnore
+    public List<TModel> getDayAnalysisResults() {
+        return dayAnalysisResults;
     }
 
-    public List<TModel> getTripAnalysisResults() {
-        return tripAnalysisResults;
+    public void setDayAnalysisResults(List<TModel> dayAnalysisResults) {
+        this.dayAnalysisResults = dayAnalysisResults;
     }
 
-    public void setTripAnalysisResults(List<TModel> tripAnalysisResults) {
-        this.tripAnalysisResults = tripAnalysisResults;
+    public TripsAnalysisResult() {
+        dayAnalysisResults = new LinkedList<>();
+    }
+
+    public List<TripAnalysisResult> getTripAnalysisResults() {
+
+        List<TripAnalysisResult> collect = dayAnalysisResults.stream().flatMap(x -> x.getTripAnalysisResultList().stream()).collect(Collectors.toList());
+        return collect;
     }
 
     private int countAnalyzedRT;
-    private Integer minimumStayTime;
-    private Integer maximumStayTime;
-    private double averageStayTime;
+    private String minimumStayTime;
+    private String maximumStayTime;
+    private String averageStayTime;
 
-    private Date latestMinDeparture;
-    private Date latestAverageDeparture;
-    private Date latestMaxDeparture;
-    private int minimumTripTime;
-    private double averageTripTime;
-    private int maximumTripTime;
+    private String latestMinDeparture;
+    private String latestAverageDeparture;
+    private String latestMaxDeparture;
+    private String minimumTripTime;
+    private String averageTripTime;
+    private String maximumTripTime;
 
-    public Integer getMinimumStayTime() {
+    public String getMinimumStayTime() {
         return minimumStayTime;
     }
 
-    public void setMinimumStayTime(Integer minimumStayTime) {
+    public void setMinimumStayTime(String minimumStayTime) {
         this.minimumStayTime = minimumStayTime;
     }
 
-    public double getAverageStayTime() {
-        return averageStayTime;
-    }
-
-    public void setAverageStayTime(double averageStayTime) {
-        this.averageStayTime = averageStayTime;
-    }
-
-    public Integer getMaximumStayTime() {
+    public String getMaximumStayTime() {
         return maximumStayTime;
     }
 
-    public void setMaximumStayTime(Integer maximumStayTime) {
+    public void setMaximumStayTime(String maximumStayTime) {
         this.maximumStayTime = maximumStayTime;
+    }
+
+    public String getAverageStayTime() {
+        return averageStayTime;
+    }
+
+    public void setAverageStayTime(String averageStayTime) {
+        this.averageStayTime = averageStayTime;
+    }
+
+    public String getMinimumTripTime() {
+        return minimumTripTime;
+    }
+
+    public void setMinimumTripTime(String minimumTripTime) {
+        this.minimumTripTime = minimumTripTime;
+    }
+
+    public String getAverageTripTime() {
+        return averageTripTime;
+    }
+
+    public void setAverageTripTime(String averageTripTime) {
+        this.averageTripTime = averageTripTime;
+    }
+
+    public String getMaximumTripTime() {
+        return maximumTripTime;
+    }
+
+    public void setMaximumTripTime(String maximumTripTime) {
+        this.maximumTripTime = maximumTripTime;
     }
 
     public int getCountAnalyzedRT() {
@@ -74,51 +103,27 @@ public class TripsAnalysisResult<TModel extends  TripAnalysisResult> {
         this.countAnalyzedRT = countAnalyzedRT;
     }
 
-    public int getMinimumTripTime() {
-        return minimumTripTime;
-    }
-
-    public void setMinimumTripTime(int minimumTripTime) {
-        this.minimumTripTime = minimumTripTime;
-    }
-
-    public Date getLatestMaxDeparture() {
+    public String getLatestMaxDeparture() {
         return latestMaxDeparture;
     }
 
-    public void setLatestMaxDeparture(Date latestMaxDeparture) {
+    public void setLatestMaxDeparture(String latestMaxDeparture) {
         this.latestMaxDeparture = latestMaxDeparture;
     }
 
-    public Date getLatestAverageDeparture() {
+    public String getLatestAverageDeparture() {
         return latestAverageDeparture;
     }
 
-    public void setLatestAverageDeparture(Date latestAverageDeparture) {
+    public void setLatestAverageDeparture(String latestAverageDeparture) {
         this.latestAverageDeparture = latestAverageDeparture;
     }
 
-    public Date getLatestMinDeparture() {
+    public String getLatestMinDeparture() {
         return latestMinDeparture;
     }
 
-    public void setLatestMinDeparture(Date latestMinDeparture) {
+    public void setLatestMinDeparture(String latestMinDeparture) {
         this.latestMinDeparture = latestMinDeparture;
-    }
-
-    public double getAverageTripTime() {
-        return averageTripTime;
-    }
-
-    public void setAverageTripTime(double averageTripTime) {
-        this.averageTripTime = averageTripTime;
-    }
-
-    public int getMaximumTripTime() {
-        return maximumTripTime;
-    }
-
-    public void setMaximumTripTime(int maximumTripTime) {
-        this.maximumTripTime = maximumTripTime;
     }
 }

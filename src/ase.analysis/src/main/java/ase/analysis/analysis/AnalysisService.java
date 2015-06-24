@@ -1,6 +1,7 @@
 package ase.analysis.analysis;
 
 import ase.analysis.Constants;
+import ase.analysis.analysis.model.DayAnalysis;
 import ase.analysis.analysis.model.TripAnalysis;
 import ase.analysis.analysis.model.TripsAnalysis;
 import ase.analysis.analysis.prioritizedMessaging.MessagePriority;
@@ -130,16 +131,20 @@ public class AnalysisService {
 
         int days = Days.daysBetween(new DateTime(analysisRequestDTO.getFrom()), new DateTime(analysisRequestDTO.getTo())).getDays();
 
+        TripsAnalysis tripsAnalysis = new TripsAnalysis();
+
         for (int currentDay = 0; currentDay < days; currentDay++) {
-            tripAnalysisList.addAll(analyzeDayRT(entryStation, exitStation, analysisRequestDTO.getLine(), direction.getName(), currentDayStart.toDate(), currentDayEnd.toDate()));
+            tripAnalysisList = analyzeDayRT(entryStation, exitStation, analysisRequestDTO.getLine(), direction.getName(), currentDayStart.toDate(), currentDayEnd.toDate());
 
             currentDayStart = currentDayStart.plusDays(1);
             currentDayEnd = currentDayEnd.plusDays(1);
+            if(tripAnalysisList.size() > 0) {
+                tripsAnalysis.addDay(new DayAnalysis(tripAnalysisList));
+            }
         }
 
         // perform actual analysis
-        TripsAnalysis tripsAnalysis = new TripsAnalysis();
-        tripsAnalysis.setTripAnalysisResults(tripAnalysisList);
+
         tripsAnalysis.analyze();
         return tripsAnalysis;
     }

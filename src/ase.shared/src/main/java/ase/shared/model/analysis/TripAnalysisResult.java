@@ -4,6 +4,7 @@ import ase.shared.model.simulation.RealtimeData;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,22 +14,28 @@ public class TripAnalysisResult {
 
     private Integer tripNumber;
 
-    private DateTime entryArrival;
-    private DateTime entryDeparture;
+    private Date entryArrival;
+    private Date entryDeparture;
 
-    private DateTime exitArrival;
+    private Date exitArrival;
 
     private List<RealtimeData> entryRT;
 
     private List<RealtimeData> exitRT;
-    private Seconds tripDuration;
-    private Seconds entryStayTime;
-    private DateTime entryPlannedArrival;
-    private DateTime exitPlannedArrival;
-    private Seconds plannedTripDuration;
+    private int tripDuration;
+    private int entryStayTime;
+    private Date entryPlannedArrival;
+    private Date exitPlannedArrival;
+    private int plannedTripDuration;
+
+    private Date latestDeparture;
 
     public TripAnalysisResult(Integer tripNumber) {
         this.tripNumber = tripNumber;
+    }
+
+    public TripAnalysisResult() {
+
     }
 
     public Integer getTripNumber() {
@@ -39,28 +46,68 @@ public class TripAnalysisResult {
         this.tripNumber = tripNumber;
     }
 
-    public DateTime getEntryArrival() {
+    public Date getEntryArrival() {
         return entryArrival;
     }
 
-    public void setEntryArrival(DateTime entryArrival) {
+    public void setEntryArrival(Date entryArrival) {
         this.entryArrival = entryArrival;
     }
 
-    public DateTime getEntryDeparture() {
+    public Date getEntryDeparture() {
         return entryDeparture;
     }
 
-    public void setEntryDeparture(DateTime entryDeparture) {
+    public void setEntryDeparture(Date entryDeparture) {
         this.entryDeparture = entryDeparture;
     }
 
-    public DateTime getExitArrival() {
+    public Date getExitArrival() {
         return exitArrival;
     }
 
-    public void setExitArrival(DateTime exitArrival) {
+    public void setExitArrival(Date exitArrival) {
         this.exitArrival = exitArrival;
+    }
+
+    public int getTripDuration() {
+        return tripDuration;
+    }
+
+    public void setTripDuration(int tripDuration) {
+        this.tripDuration = tripDuration;
+    }
+
+    public int getEntryStayTime() {
+        return entryStayTime;
+    }
+
+    public void setEntryStayTime(int entryStayTime) {
+        this.entryStayTime = entryStayTime;
+    }
+
+    public Date getEntryPlannedArrival() {
+        return entryPlannedArrival;
+    }
+
+    public void setEntryPlannedArrival(Date entryPlannedArrival) {
+        this.entryPlannedArrival = entryPlannedArrival;
+    }
+
+    public Date getExitPlannedArrival() {
+        return exitPlannedArrival;
+    }
+
+    public void setExitPlannedArrival(Date exitPlannedArrival) {
+        this.exitPlannedArrival = exitPlannedArrival;
+    }
+
+    public int getPlannedTripDuration() {
+        return plannedTripDuration;
+    }
+
+    public void setPlannedTripDuration(int plannedTripDuration) {
+        this.plannedTripDuration = plannedTripDuration;
     }
 
     public List<RealtimeData> getEntryRT() {
@@ -79,43 +126,12 @@ public class TripAnalysisResult {
         this.exitRT = exitRT;
     }
 
-    public Seconds getTripDuration() {
-        return tripDuration;
+
+    public Date getLatestDeparture() {
+        return latestDeparture;
     }
 
-    public void setTripDuration(Seconds tripDuration) {
-        this.tripDuration = tripDuration;
-    }
-
-    public Seconds getEntryStayTime() {
-        return entryStayTime;
-    }
-
-    public void setEntryStayTime(Seconds entryStayTime) {
-        this.entryStayTime = entryStayTime;
-    }
-
-    public DateTime getEntryPlannedArrival() {
-        return entryPlannedArrival;
-    }
-
-    public void setEntryPlannedArrival(DateTime entryPlannedArrival) {
-        this.entryPlannedArrival = entryPlannedArrival;
-    }
-
-    public DateTime getExitPlannedArrival() {
-        return exitPlannedArrival;
-    }
-
-    public void setExitPlannedArrival(DateTime exitPlannedArrival) {
-        this.exitPlannedArrival = exitPlannedArrival;
-    }
-
-    public Seconds getPlannedTripDuration() {
-        return plannedTripDuration;
-    }
-
-    public void setPlannedTripDuration(Seconds plannedTripDuration) {
-        this.plannedTripDuration = plannedTripDuration;
+    public void setLatestDeparture(Date latestDeparture) {
+        this.latestDeparture = latestDeparture;
     }
 }
