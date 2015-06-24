@@ -37,6 +37,8 @@ public class DataConcernEvaluationController {
     @RequestMapping(value = "evaluate/{reportId}", produces = "application/json")
     public DataConcernListDTO evaluateReport(@PathVariable("reportId") String reportId) {
 
+        System.out.println("Evaluation for: " + reportId);
+
         DataConcernListDTO dataConcernDTO = new DataConcernListDTO();
         dataConcernDTO.setReportId(reportId);
 

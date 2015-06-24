@@ -23,6 +23,8 @@ public class AnalysisController {
     @RequestMapping(value = "/request/{priority}/", method = RequestMethod.POST, produces = "application/json")
     public AnalysisResponseDTO requestAnalysis(@RequestBody AnalysisRequestDTO analysisRequestDTO, @PathVariable("priority") String priority) {
 
+        System.out.println("Analysis for: " + analysisRequestDTO.getUserId());
+
         MessagePriority messagePriority = MessagePriority.valueOf(priority);
 
         ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
