@@ -63,14 +63,6 @@ public class ReportController {
     @HystrixCommand(fallbackMethod = "requestReportFallback")
     public AnalysisResponseDTO requestReport(@RequestBody AnalysisRequestDTO analysisRequestDTO, @PathVariable String priority) {
 
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<AnalysisRequestDTO> analysisRequestDTOHttpEntity = new HttpEntity<>(analysisRequestDTO, headers);
-     //   return restTemplate.postForObject("http://localhost:9090/analysis/request/Low/", analysisRequestDTOHttpEntity, AnalysisResponseDTO.class);
-
         return commandFactory.requestReportCommand(analysisRequestDTO, priority).getResult();
     }
 

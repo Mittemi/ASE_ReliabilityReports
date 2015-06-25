@@ -70,6 +70,14 @@ public class AnalysisService {
         if(analysisRequestDTO.getFrom().after(analysisRequestDTO.getTo()))
             return error("Invalid values for from, to");
 
+        // check DaaS concern
+        int days = Days.daysBetween(new DateTime(analysisRequestDTO.getFrom()), new DateTime(analysisRequestDTO.getTo())).getDays();
+        if(days > 7 && messagePriority.equals(MessagePriority.Low)) {
+            return error("For analyzing more than seven days use at least priority Medium or High!");
+        }
+        if(days > 30 && !messagePriority.equals(MessagePriority.High)) {
+            return error("For analyzing more than 30 days use priority High!");
+        }
 
         System.out.println("Queuing analysis for user " + analysisRequestDTO.getUserId());
         analysisResponseDTO.setOk(true);

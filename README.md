@@ -57,6 +57,7 @@ _______________________________________________________________________________
 Request Report (Medium priority): Possible priority levels (Low, Medium, High).
 ###############################################################################
 POST: http://localhost:8080/report/request/Medium/
+ContentType: application/json
 -------------------------------------------------------------------------------
 Content: e.g.
 

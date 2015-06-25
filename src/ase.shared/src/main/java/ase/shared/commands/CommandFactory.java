@@ -27,25 +27,11 @@ public class CommandFactory {
 
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
-//
-//    @Bean
-//    private RestTemplate defaultRestTemplate() {
-//        return new RestTemplate();
-//    }
 
-    @Bean(name = "traversonRestTemplate")
+    @Bean
     private RestTemplate restTemplate() {
 
         return new RestTemplate();
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//        mapper.registerModule(new Jackson2HalModule());
-//
-//        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-//        converter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/hal+json"));
-//        converter.setObjectMapper(mapper);
-//        return new RestTemplate(Arrays.asList(converter));
-        //return new RestTemplate();
     }
 
     //TODO: remove . from url (fiddler)
@@ -116,6 +102,9 @@ public class CommandFactory {
         return autowire(new GetRealtimeDataByTrainAndTWCommand(DATASOURCE_URL, lineName, direction, trainNumber, from, to));
     }
 
+    public GetLineInfoCommand getLineInfoCommand(String lineName) {
+        return autowire(new GetLineInfoCommand(DATASOURCE_URL, lineName));
+    }
 
     ////////////////////
     //  NOTIFICATION  //

@@ -873,4 +873,8 @@ public class DataSimulation {
         if(line == null)    return null;
         return Lists.newLinkedList(getAllStations(line));
     }
+
+    public List<Train> getTrains(String line) {
+        return trainsPerLine.get(lines.get(line)).values().stream().collect(Collectors.toList());
+    }
 }

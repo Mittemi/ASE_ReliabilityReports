@@ -5,7 +5,7 @@ package ase.analysis.analysis.prioritizedMessaging;
  */
 public enum MessagePriority {
     //priority values from: http://activemq.apache.org/how-can-i-support-priority-queues.html
-    Low(0), //0..3
+    Low(1), //0..3
     Medium(4),  //4
     High(9);    //5..9
 

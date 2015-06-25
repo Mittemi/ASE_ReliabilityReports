@@ -1,15 +1,19 @@
 package ase.datasource.controller;
 
 import ase.datasource.simulation.DataSimulation;
+import ase.shared.dto.LineInfoDTO;
 import ase.shared.model.simulation.Line;
 import ase.shared.model.simulation.Station;
+import ase.shared.model.simulation.Train;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 
@@ -22,27 +26,6 @@ public class DataSourceController {
 
     @Autowired
     private DataSimulation dataSimulation;
-
-    //@RequestMapping(value = "/{line}/{station}/{direction}/")
-//    @RequestMapping(value = "/data/{line}/")
-//    @ResponseBody
-//    public List<RealtimeData> realtimeData(
-//            @PathVariable String line/*, @PathVariable String station, @PathVariable String direction*/) {
-//
-//        RealtimeData realtimeData = new RealtimeData();
-//        realtimeData.add(linkTo(methodOn(DataSourceController.class).realtimeData(line, station, direction)).withSelfRel());
-//
-//
-//
-//        return new ResponseEntity<>(realtimeData, HttpStatus.OK);
-//        return dataSimulation.move(line);
-//    }
-
-//    @RequestMapping(value = "/")
-//    public String simulate() {
-//        dataSimulation.move("U1");
-//        return "OK";
-//    }
 
     @RequestMapping(value = "/lines/")
     public Collection<Line> getLines() {
@@ -77,5 +60,19 @@ public class DataSourceController {
     @RequestMapping(value = "/time", produces = "application/json")
     public String currentTime() {
         return dataSimulation.getCurrentTime().toString();
+    }
+
+    @RequestMapping(value = "/lineinfo/{line}/")
+    public LineInfoDTO getLineInfo(String line) {
+        int time = dataSimulation.getTimeToTravelPerStation(line);
+        LineInfoDTO lineInfoDTO = new LineInfoDTO();
+        lineInfoDTO.setTimeBetweenTrains(time);
+        lineInfoDTO.setTrains(dataSimulation.getTrains(line).stream().map(Train::getNumber).collect(Collectors.toList()));
+
+        // obviously this is also faked but required for concern evaluation
+        Random random = new Random(new Date().getTime());
+        lineInfoDTO.setSamplingRate(30 + random.nextInt(30));
+
+        return lineInfoDTO;
     }
 }
