@@ -11,18 +11,12 @@ import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.model.ReportMetadata;
 import ase.shared.model.analysis.Report;
 import ase.shared.model.notification.Notification;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.hateoas.hal.Jackson2HalModule;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Date;
 
 /**

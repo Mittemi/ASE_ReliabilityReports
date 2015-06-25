@@ -1,11 +1,5 @@
 package ase.shared.dto;
 
-import ase.shared.model.analysis.TripAnalysisResult;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Created by Michael on 24.06.2015.
  */

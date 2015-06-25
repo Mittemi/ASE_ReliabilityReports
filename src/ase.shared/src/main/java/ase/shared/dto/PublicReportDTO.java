@@ -1,9 +1,6 @@
 package ase.shared.dto;
 
-import ase.shared.model.analysis.DayAnalysisResult;
 import ase.shared.model.analysis.ReportTimeSpan;
-import ase.shared.model.analysis.TripAnalysisResult;
-import ase.shared.model.analysis.TripsAnalysisResult;
 import ase.shared.model.simulation.Line;
 import ase.shared.model.simulation.Station;
 

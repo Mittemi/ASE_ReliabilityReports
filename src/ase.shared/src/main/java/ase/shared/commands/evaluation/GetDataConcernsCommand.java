@@ -1,7 +1,6 @@
 package ase.shared.commands.evaluation;
 
 import ase.shared.commands.GenericRESTCommand;
-import ase.shared.dto.DataConcernDTO;
 import ase.shared.dto.DataConcernListDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;

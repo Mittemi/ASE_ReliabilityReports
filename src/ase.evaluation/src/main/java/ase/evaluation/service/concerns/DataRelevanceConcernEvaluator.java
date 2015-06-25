@@ -6,10 +6,7 @@ import ase.shared.dto.ReportMetadataDTO;
 import ase.shared.enums.DataConcernType;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Interval;
 import org.joda.time.Minutes;
-
-import java.time.Period;
 
 /**
  * Created by Michael on 20.06.2015.
