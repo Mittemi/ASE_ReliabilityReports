@@ -36,6 +36,6 @@ public class EvaluationPerformanceConcernEvaluator extends DataConcernEvaluatorB
         if(days == 0)
             return -1;      //concern is useless in this case
 
-        return ((seconds) * days) / ((double)reportMetadataDTO.getPriority() * 10);
+        return (days * 10) / (seconds * (double)reportMetadataDTO.getPriority());
     }
 }

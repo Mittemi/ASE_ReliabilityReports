@@ -38,7 +38,7 @@ public class DataQualityConcernEvaluator extends DataConcernEvaluatorBase {
         if(days == 0)
             return -1;
 
-        return (reportDTO.getTripsAnalysisResult().getCountAnalyzedRT() / frameDurationMinutes) * days;
+        return (reportDTO.getTripsAnalysisResult().getCountAnalyzedRT() * 10 / frameDurationMinutes) * days;
     }
 
 }
