@@ -68,7 +68,7 @@ public class DataRelevanceConcernEvaluator extends DataConcernEvaluatorBase {
 
         for (Pair<Integer, Integer> item : relevancy.keySet()) {
 
-            if(item.getKey() < reportDTO.getTime().getHourFrom() && item.getValue() >= reportDTO.getTime().getHourTo()) {
+            if(item.getKey() <= reportDTO.getTime().getHourFrom() && item.getValue() >= reportDTO.getTime().getHourFrom()) {
                 return relevancy.get(item);
             }
         }

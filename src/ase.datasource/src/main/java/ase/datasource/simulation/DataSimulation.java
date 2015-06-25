@@ -141,7 +141,7 @@ public class DataSimulation {
         timeToTravel = new ConcurrentHashMap<>();
 
         initU1();
-        initU2();
+        //initU2();
        // initU3();
         checkConstraints();
     }
