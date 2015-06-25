@@ -6,5 +6,5 @@ package ase.shared.enums;
 public enum DataConcernType {
     SamplingRate,
     DataRelevance,
-    EvaluationPerformance,
+    EvaluationPerformance, DataQuality,
 }

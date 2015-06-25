@@ -1,5 +1,6 @@
 package ase.evaluation.service;
 
+import ase.evaluation.service.concerns.DataQualityConcernEvaluator;
 import ase.evaluation.service.concerns.DataRelevanceConcernEvaluator;
 import ase.evaluation.service.concerns.EvaluationPerformanceConcernEvaluator;
 import ase.evaluation.service.concerns.SamplingRateConcernEvaluator;
@@ -30,6 +31,9 @@ public class DataConcernEvaluatorFactory {
                 break;
             case EvaluationPerformance:
                 dataConcernEvaluatorBase = new EvaluationPerformanceConcernEvaluator();
+                break;
+            case DataQuality:
+                dataConcernEvaluatorBase = new DataQualityConcernEvaluator();
                 break;
         }
 

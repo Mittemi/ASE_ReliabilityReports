@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Created by Michael on 20.06.2015.
  *
- * Data Concern: Data quality
+ * Data Concern: Sampling rate
  *
  * Evaluates the sampling rate in relation to the frequency trains are passing the station
  *  - if the value is below a certain threshold the sampling rate should be increased at this line
  *  - if the value is above a certain threshold we should consider reducing the sampling rate
  *
- *  Range: ]0 -> infinite[
+ * e.g. one train every 4 minutes and a sampling rate of 30 seconds results in concern value: 8
+ *
  */
 public class SamplingRateConcernEvaluator extends DataConcernEvaluatorBase {
 
@@ -43,7 +44,6 @@ public class SamplingRateConcernEvaluator extends DataConcernEvaluatorBase {
 
         if(lineInfoDTO == null)
             return -1;      //evaluation not possible, reason unknown, better be safe than sorry
-
 
         return (lineInfoDTO.getTimeBetweenTrains() * 60 / lineInfoDTO.getSamplingRate());
     }
