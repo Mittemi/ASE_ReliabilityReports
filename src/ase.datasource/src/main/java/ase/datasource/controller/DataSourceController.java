@@ -63,7 +63,7 @@ public class DataSourceController {
     }
 
     @RequestMapping(value = "/lineinfo/{line}/")
-    public LineInfoDTO getLineInfo(String line) {
+    public LineInfoDTO getLineInfo(@PathVariable String line) {
         int time = dataSimulation.getTimeToTravelPerStation(line);
         LineInfoDTO lineInfoDTO = new LineInfoDTO();
         lineInfoDTO.setTimeBetweenTrains(time);
