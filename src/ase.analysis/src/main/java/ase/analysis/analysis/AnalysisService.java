@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,14 +41,39 @@ public class AnalysisService {
     @Autowired
     private CommandFactory commandFactory;
 
+    public AnalysisResponseDTO error(String message) {
+        AnalysisResponseDTO responseDTO = new AnalysisResponseDTO();
+        responseDTO.setOk(false);
+        responseDTO.setMessage(message);
+        return responseDTO;
+    }
+
     public AnalysisResponseDTO queueForAnalysis(AnalysisRequestDTO analysisRequestDTO, MessagePriority messagePriority) {
 
-        System.out.println("Queuing analysis for user " + analysisRequestDTO.getUserId());
+        System.out.println("Basic validation of analysis request for user " + analysisRequestDTO.getUserId());
 
         AnalysisResponseDTO analysisResponseDTO = new AnalysisResponseDTO();
 
-        // TODO: there should be some validation to make sure only valid requests are processed but, lets skip this for this mini project
+        // TODO: there should be some additonal validation to make sure only valid requests are processed but, lets skip this for this mini project
+        if(StringUtils.isEmpty(analysisRequestDTO.getUserId()))
+            return error("userId required");
+
+        if(StringUtils.isEmpty(analysisRequestDTO.getStationFrom()))
+            return error("stationFrom required");
+
+        if(StringUtils.isEmpty(analysisRequestDTO.getStationTo()))
+            return error("stationTo required");
+
+        if(StringUtils.isEmpty(analysisRequestDTO.getLine()))
+            return error("line required");
+
+        if(analysisRequestDTO.getFrom().after(analysisRequestDTO.getTo()))
+            return error("Invalid values for from, to");
+
+
+        System.out.println("Queuing analysis for user " + analysisRequestDTO.getUserId());
         analysisResponseDTO.setOk(true);
+        analysisResponseDTO.setMessage("Queued for analysis.");
 
         // queue for analysis if request is valid
         if(analysisResponseDTO.isOk()) {
@@ -56,8 +82,7 @@ public class AnalysisService {
                 prioritizedJmsTemplate.send(new PrioritizedMessageCreator(new PrioritizedMessage<Object>(analysisRequestDTO, messagePriority)));
             } catch (JmsException e) {
                 e.printStackTrace();
-                analysisResponseDTO.setOk(false);
-                analysisResponseDTO.setMessage("Queueing for analysis failed! Please try again");
+                return error("Queueing for analysis failed! Please try again later!");
             }
         }
 
@@ -70,55 +95,69 @@ public class AnalysisService {
     public void jmsAnalyseTarget(AnalysisRequestDTO analysisRequestDTO) {
 
         System.out.println("Processing analysis request from user " + analysisRequestDTO.getUserId() + " for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo());
+        List<Station> stations = null;
+        try {
+            stations = Arrays.asList(commandFactory.getStationsBetweenCommand(analysisRequestDTO.getLine(), analysisRequestDTO.getStationFrom(), analysisRequestDTO.getStationTo()).getResult());
+        } catch (Exception ex) {
 
-        List<Station> stations = Arrays.asList(commandFactory.getStationsBetweenCommand(analysisRequestDTO.getLine(), analysisRequestDTO.getStationFrom(), analysisRequestDTO.getStationTo()).getResult());
+        }
 
-        if (stations.size() <= 1) {
+        if (stations == null || stations.size() <= 1) {
             //useless analysis (bad request)
             System.out.println("Bad request, stop analysis for user: " + analysisRequestDTO.getUserId());
+            sendNotification(analysisRequestDTO.getUserId(), "Analysis failed", "The request was invalid, stations not found!");
             return;
         }
 
         // get required input data for analysis (stations, directions, ...)
-        List<Station> directions = Arrays.asList(commandFactory.getDirectionsCommand(analysisRequestDTO.getLine()).getResult());
-        directions.sort((Station stationA, Station stationB) -> Integer.compare(stationA.getPosition(), stationB.getPosition()));
-        Station directionLow = directions.get(0);
-        Station directionHigh = directions.get(1);
+        try {
+            List<Station> directions = Arrays.asList(commandFactory.getDirectionsCommand(analysisRequestDTO.getLine()).getResult());
+            directions.sort((Station stationA, Station stationB) -> Integer.compare(stationA.getPosition(), stationB.getPosition()));
+            Station directionLow = directions.get(0);
+            Station directionHigh = directions.get(1);
 
-        Station entryStation = stations.stream().filter(x -> x.getName().equals(analysisRequestDTO.getStationFrom())).findFirst().get();
-        Station exitStation = stations.stream().filter(x -> x.getName().equals(analysisRequestDTO.getStationTo())).findFirst().get();
+            Station entryStation = stations.stream().filter(x -> x.getName().equals(analysisRequestDTO.getStationFrom())).findFirst().get();
+            Station exitStation = stations.stream().filter(x -> x.getName().equals(analysisRequestDTO.getStationTo())).findFirst().get();
 
-        Station direction = entryStation.getPosition() < exitStation.getPosition() ? directionHigh : directionLow;
+            Station direction = entryStation.getPosition() < exitStation.getPosition() ? directionHigh : directionLow;
 
-        // perform actual analysis
-        TripsAnalysis tripsAnalysis = analyse(analysisRequestDTO, entryStation, exitStation, direction);
+            // perform actual analysis
+            TripsAnalysis tripsAnalysis = analyse(analysisRequestDTO, entryStation, exitStation, direction);
 
-        // create report
-        Report report = createReport(analysisRequestDTO, stations, tripsAnalysis);
+            // create report
+            Report report = createReport(analysisRequestDTO, stations, tripsAnalysis);
 
-        // save report
-        CreateResult createResult = commandFactory.createReportCommand(report).getResult();
+            // save report
+            CreateResult createResult = commandFactory.createReportCommand(report).getResult();
 
-        //save report metadata, required for evaluation
-        if(createResult.isOk()) {
-            analysisRequestDTO.getReportMetadata().setCreatedAt(new Date());
-            analysisRequestDTO.getReportMetadata().setReportId(createResult.getLocation().substring(createResult.getLocation().lastIndexOf('/') + 1));
-            commandFactory.createReportMetadataCommand(analysisRequestDTO.getReportMetadata()).execute();
+            //save report metadata, required for evaluation
+            if (createResult.isOk()) {
+                analysisRequestDTO.getReportMetadata().setCreatedAt(new Date());
+                analysisRequestDTO.getReportMetadata().setReportId(createResult.getLocation().substring(createResult.getLocation().lastIndexOf('/') + 1));
+                commandFactory.createReportMetadataCommand(analysisRequestDTO.getReportMetadata()).execute();
 
-            Notification notification = new Notification();
-            notification.setEmail(analysisRequestDTO.getUserId());
-            notification.setSubject("Report finished");
-            notification.setDate(new Date());
-            notification.setMessage("The report for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo() + " has been finished!\n\n" +
-                    "ReportID: " + analysisRequestDTO.getReportMetadata().getReportId() + "\n\nThanks for using our service!");
-
-            CreateResult result = commandFactory.createNotificationCommand(notification).getResult();
-            // we don't care about the notification result :)
-        }
-        else{
-            System.out.println("Report failed, we don't care about such situations in this implementation. Should not happen anyway :)");
+                sendNotification(analysisRequestDTO.getUserId(), "Report finished", "The report for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo() + " has been finished!\n\n" +
+                        "ReportID: " + analysisRequestDTO.getReportMetadata().getReportId() + "\n\nThanks for using our service!");
+                // we don't care about the notification result :)
+            } else {
+                System.out.println("Report failed, we don't care about such situations in this implementation. Should not happen anyway :)");
+            }
+        } catch (Exception ex) {
+            sendNotification(analysisRequestDTO.getUserId(), "Analysis failed!", "The analysis was not possible, the request seams to be invalid!");
+            ex.printStackTrace();
         }
         System.out.println("Processing finished for user " + analysisRequestDTO.getUserId());
+    }
+
+    private boolean sendNotification(String user, String subject, String message) {
+        Notification notification = new Notification();
+        notification.setEmail(user);
+        notification.setSubject(subject);
+        notification.setDate(new Date());
+        notification.setMessage(message);
+
+        CreateResult result = commandFactory.createNotificationCommand(notification).getResult();
+        return result.isOk();
     }
 
     private TripsAnalysis analyse(AnalysisRequestDTO analysisRequestDTO, Station entryStation, Station exitStation, Station direction) {

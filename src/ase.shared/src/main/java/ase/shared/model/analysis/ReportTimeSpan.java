@@ -1,5 +1,10 @@
 package ase.shared.model.analysis;
 
+import ase.shared.Constants;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 /**
@@ -15,8 +20,12 @@ public class ReportTimeSpan {
         this.toDate = toDate;
     }
 
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
+    @JsonFormat(pattern = Constants.DATE_FORMAT)
     private Date fromDate;
 
+    @DateTimeFormat(pattern = Constants.DATE_FORMAT)
+    @JsonFormat(pattern = Constants.DATE_FORMAT)
     private Date toDate;
 
     private int hourFrom;

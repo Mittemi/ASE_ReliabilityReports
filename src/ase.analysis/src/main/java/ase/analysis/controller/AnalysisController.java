@@ -25,7 +25,12 @@ public class AnalysisController {
 
         System.out.println("Analysis for: " + analysisRequestDTO.getUserId());
 
-        MessagePriority messagePriority = MessagePriority.valueOf(priority);
+        MessagePriority messagePriority;
+        try {
+            messagePriority = MessagePriority.valueOf(priority);
+        }catch (IllegalArgumentException ex) {
+            return analysisService.error("Illegal priority level! Possible values: (Low, Medium, High)");
+        }
 
         ReportMetadataDTO reportMetadata = new ReportMetadataDTO();
         reportMetadata.setRequestedAt(new Date());
@@ -37,5 +42,4 @@ public class AnalysisController {
         // queue the request for analysis. one of our analysis servers is going to take care of the actual work
         return analysisService.queueForAnalysis(analysisRequestDTO, messagePriority);
     }
-
 }
