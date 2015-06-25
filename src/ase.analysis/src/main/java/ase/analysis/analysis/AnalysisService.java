@@ -144,7 +144,7 @@ public class AnalysisService {
                 analysisRequestDTO.getReportMetadata().setReportId(createResult.getLocation().substring(createResult.getLocation().lastIndexOf('/') + 1));
                 commandFactory.createReportMetadataCommand(analysisRequestDTO.getReportMetadata()).execute();
 
-                sendNotification(analysisRequestDTO.getUserId(), "Report finished", "The report for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo() + " has been finished!\n\n" +
+                sendNotification(analysisRequestDTO.getUserId(), "Report finished (" + analysisRequestDTO.getReportMetadata().getPriority() + ")", "The report for line " + analysisRequestDTO.getLine() + " from " + analysisRequestDTO.getStationFrom() + " to " + analysisRequestDTO.getStationTo() + " has been finished!\n\n" +
                         "ReportID: " + analysisRequestDTO.getReportMetadata().getReportId() + "\n\nThanks for using our service!");
                 // we don't care about the notification result :)
             } else {
