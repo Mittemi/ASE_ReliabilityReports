@@ -34,12 +34,11 @@ public class CommandFactory {
         return new RestTemplate();
     }
 
-    //TODO: remove . from url (fiddler)
-    private final String REPORT_STORAGE_URL = "http://localhost.:9100";
-    private final String DATASOURCE_URL = "http://localhost.:9999";
-    private final String NOTIFICATION_URL = "http://localhost.:9200";
-    private final String EVALUATION_URL = "http://localhost.:9300";
-    private final String ANALYSIS_URL = "http://localhost.:9090";
+    private final String REPORT_STORAGE_URL = "http://localhost:9100";
+    private final String DATASOURCE_URL = "http://localhost:9999";
+    private final String NOTIFICATION_URL = "http://localhost:9200";
+    private final String EVALUATION_URL = "http://localhost:9300";
+    private final String ANALYSIS_URL = "http://localhost:9090";
 
     private <T> T autowire(T command) {
         autowireCapableBeanFactory.autowireBean(command);
