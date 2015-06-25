@@ -16,10 +16,13 @@ Every service comes with it's own application.properties files located in the re
 Inside this file the ip address of the mongodb server should be changed, if it is not located at the localhost!
 
 ## Compilation ##
-maven install -DskipTests=true
+mvn install -DskipTests=true
 
 ## Running ##
-There is no fixed order the services need to be started in. Each one can be started using:
+There is no fixed order the services need to be started in. Each one can be started by switching to the folder (ase.analysis) and using:
+mvn spring-boot:run 
+
+Alternatively it can alse be done using:
 java -jar target/SERVICE_NAME.jar
 
 #################
